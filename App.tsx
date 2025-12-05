@@ -9,7 +9,8 @@ import { OrdersView } from './components/views/OrdersView';
 import { ProductsView } from './components/views/ProductsView';
 import { ProductDetailView } from './components/views/ProductDetailView';
 import { SitesView } from './components/views/SitesView';
-import { SiteDetailView } from './components/views/SiteDetailView';
+import { SiteDetailView } from './components/views/SiteDetail';
+import { PricesView } from './components/views/PricesView';
 
 // 路由类型定义
 interface Route {
@@ -99,6 +100,8 @@ function App() {
           return <SiteDetailView siteId={id} onNavigate={navigate} />;
         }
         return <SitesView onNavigate={navigate} />;
+      case 'prices':
+        return <PricesView />;
       default:
         return (
           <div className="flex h-[50vh] flex-col items-center justify-center space-y-4 text-center">

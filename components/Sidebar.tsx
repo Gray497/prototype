@@ -8,7 +8,8 @@ import {
   LogOut,
   Package,
   FileText,
-  Globe
+  Globe,
+  DollarSign
 } from 'lucide-react';
 import { NavItem } from '../types';
 
@@ -25,6 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, currentView, 
     { title: '产品管理', href: 'products', icon: Package, variant: 'ghost' },
     { title: '订单管理', href: 'orders', icon: ShoppingBag, variant: 'ghost' },
     { title: '站点管理', href: 'sites', icon: Globe, variant: 'ghost' },
+    { title: '价格管理', href: 'prices', icon: DollarSign, variant: 'ghost' },
   ];
 
   const handleNavClick = (view: string) => {
