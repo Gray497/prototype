@@ -13,6 +13,13 @@ import { SitesView } from './components/views/SitesView';
 import { SiteDetailView } from './components/views/SiteDetail';
 import { PricesView } from './components/views/PricesView';
 import { SiteTemplatesView } from './components/views/SiteTemplatesView';
+// 内容管理
+import { TagsView } from './components/views/TagsView';
+// 玄学模块
+import { LeadsView } from './components/views/LeadsView';
+// 系统管理
+import { UsersView } from './components/views/UsersView';
+import { RolesView } from './components/views/RolesView';
 
 // 路由类型定义
 interface Route {
@@ -110,6 +117,17 @@ function App() {
         return <PricesView />;
       case 'templates':
         return <SiteTemplatesView />;
+      // 内容管理
+      case 'tags':
+        return <TagsView />;
+      // 玄学模块
+      case 'leads':
+        return <LeadsView />;
+      // 系统管理
+      case 'users':
+        return <UsersView />;
+      case 'roles':
+        return <RolesView />;
       default:
         return (
           <div className="flex h-[50vh] flex-col items-center justify-center space-y-4 text-center">

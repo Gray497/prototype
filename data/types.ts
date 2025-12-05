@@ -214,3 +214,60 @@ export interface RecentSale {
   avatar: string;
 }
 
+// --- 玄学模块-线索相关 ---
+export type LeadType = '手相' | '面相';
+
+export interface Lead {
+  id: string;
+  sessionId: string;           // X-session-id
+  name: string;                // 姓名
+  phone: string;               // 手机号
+  siteId: string;              // 站点
+  siteName?: string;           // 站点名称（用于展示）
+  orderId?: string;            // 关联订单
+  type: LeadType;              // 类型（手相、面相）
+  images: string[];            // 图片列表
+  createdAt: string;           // 创建时间
+  receptionist: string;        // 接待人
+  status?: '待处理' | '处理中' | '已完成';
+  remark?: string;             // 备注
+}
+
+// --- 系统管理-用户相关 ---
+export type SystemUserStatus = 'active' | 'inactive' | 'locked';
+
+export interface SystemUser {
+  id: string;
+  username: string;            // 用户名
+  name: string;                // 姓名
+  email: string;               // 邮箱
+  phone?: string;              // 手机号
+  avatar?: string;             // 头像
+  roleIds: string[];           // 关联角色ID列表
+  roleName?: string;           // 角色名称（用于展示）
+  status: SystemUserStatus;    // 状态
+  lastLoginAt?: string;        // 最后登录时间
+  createdAt: string;           // 创建时间
+  updatedAt: string;           // 更新时间
+}
+
+// --- 系统管理-角色相关 ---
+export interface Permission {
+  id: string;
+  name: string;                // 权限名称
+  code: string;                // 权限编码
+  description?: string;        // 权限描述
+}
+
+export interface Role {
+  id: string;
+  name: string;                // 角色名称
+  code: string;                // 角色编码
+  description?: string;        // 角色描述
+  permissions: string[];       // 权限ID列表
+  userCount?: number;          // 关联用户数
+  status: 'active' | 'inactive';
+  createdAt: string;
+  updatedAt: string;
+}
+
