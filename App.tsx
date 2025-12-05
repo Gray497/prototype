@@ -5,12 +5,14 @@ import { DashboardView } from './components/views/DashboardView';
 import { SettingsView } from './components/views/SettingsView';
 import { CustomersView } from './components/views/CustomersView';
 import { ArticlesView } from './components/views/ArticlesView';
+import { ArticleDetailView } from './components/views/ArticleDetailView';
 import { OrdersView } from './components/views/OrdersView';
 import { ProductsView } from './components/views/ProductsView';
 import { ProductDetailView } from './components/views/ProductDetailView';
 import { SitesView } from './components/views/SitesView';
 import { SiteDetailView } from './components/views/SiteDetail';
 import { PricesView } from './components/views/PricesView';
+import { SiteTemplatesView } from './components/views/SiteTemplatesView';
 
 // 路由类型定义
 interface Route {
@@ -84,7 +86,11 @@ function App() {
       case 'customers':
         return <CustomersView />;
       case 'articles':
-        return <ArticlesView />;
+        // 如果有 id 参数，显示文章详情/编辑页
+        if (id) {
+          return <ArticleDetailView articleId={id} onNavigate={navigate} />;
+        }
+        return <ArticlesView onNavigate={navigate} />;
       case 'orders':
         return <OrdersView />;
       case 'products':
@@ -102,6 +108,8 @@ function App() {
         return <SitesView onNavigate={navigate} />;
       case 'prices':
         return <PricesView />;
+      case 'templates':
+        return <SiteTemplatesView />;
       default:
         return (
           <div className="flex h-[50vh] flex-col items-center justify-center space-y-4 text-center">

@@ -3,7 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Avatar } from '../ui/Avatar';
-import { MoreHorizontal, FileText, Eye, Calendar, User } from 'lucide-react';
+import { FileText, Eye, Edit } from 'lucide-react';
+
+interface ArticlesViewProps {
+  onNavigate?: (path: string) => void;
+}
 
 const articles = [
     { 
@@ -63,7 +67,19 @@ const articles = [
     },
 ];
 
-export const ArticlesView: React.FC = () => {
+export const ArticlesView: React.FC<ArticlesViewProps> = ({ onNavigate }) => {
+    const handleEditClick = (articleId: string) => {
+        if (onNavigate) {
+            onNavigate(`articles/${articleId}`);
+        }
+    };
+
+    const handleCreateClick = () => {
+        if (onNavigate) {
+            onNavigate('articles/new');
+        }
+    };
+
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -71,7 +87,7 @@ export const ArticlesView: React.FC = () => {
                     <h2 className="text-3xl font-bold tracking-tight">文章管理</h2>
                     <p className="text-muted-foreground">管理您的博客文章和内容。</p>
                 </div>
-                 <Button>
+                 <Button onClick={handleCreateClick}>
                     <FileText className="mr-2 h-4 w-4" />
                     创建文章
                  </Button>
@@ -170,8 +186,13 @@ export const ArticlesView: React.FC = () => {
                                             {article.lastViewedAt}
                                         </td>
                                         <td className="p-4 align-middle text-right">
-                                            <Button variant="ghost" size="icon">
-                                                <MoreHorizontal className="h-4 w-4" />
+                                            <Button 
+                                                variant="ghost" 
+                                                size="icon"
+                                                onClick={() => handleEditClick(article.id)}
+                                                title="编辑文章"
+                                            >
+                                                <Edit className="h-4 w-4" />
                                             </Button>
                                         </td>
                                     </tr>

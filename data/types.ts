@@ -146,6 +146,45 @@ export interface Site {
   updatedAt: string;
 }
 
+// --- 文章相关 ---
+export interface Article {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  status: '已发布' | '草稿' | '定时发布' | '已归档';
+  views: string;
+  createdAt: string;
+  lastViewedAt: string;
+  category: string;
+  tags: string[];
+  excerpt?: string;
+  coverImage?: string;
+  scheduledAt?: string;
+  siteId?: string;
+  url?: string;
+}
+
+// --- 站点模板相关 ---
+export type TemplateType = 'single' | 'multi';  // 单品/多品
+
+export interface SiteTemplate {
+  id: string;
+  name: string;
+  type: TemplateType;
+  description?: string;
+  thumbnail?: string;
+  boundSiteIds: string[];  // 绑定的站点 ID 列表
+  config: {
+    theme?: string;
+    layout?: string;
+    features?: string[];
+  };
+  status: 'active' | 'draft';
+  createdAt: string;
+  updatedAt: string;
+}
+
 // --- Dashboard 相关 ---
 export interface Metric {
   title: string;
