@@ -8,7 +8,9 @@ import {
   Filter,
   Save,
   Globe,
-  Package
+  Package,
+  X,
+  Edit
 } from 'lucide-react';
 import { 
   mockSites, 
@@ -64,11 +66,92 @@ const generatePriceData = (): PriceEntry[] => {
   return entries;
 };
 
+// --- 价格编辑弹框 ---
+interface PriceEditModalProps {
+  entry: PriceEntry;
+  onSave: (entryId: string, newPrice: number) => void;
+  onClose: () => void;
+}
+
+const PriceEditModal: React.FC<PriceEditModalProps> = ({ entry, onSave, onClose }) => {
+  const [price, setPrice] = useState(entry.price);
+  const region = regionOptions.find(r => r.value === entry.siteRegion);
+
+  const handleSave = () => {
+    onSave(entry.id, price);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+      <div 
+        className="bg-background rounded-lg shadow-xl w-full max-w-md mx-4 animate-in fade-in zoom-in-95 duration-200"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-4 border-b">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <Edit className="h-5 w-5" />
+            编辑价格
+          </h3>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        <div className="p-4 space-y-4">
+          {/* 信息展示 */}
+          <div className="space-y-3 p-3 bg-muted/30 rounded-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">{region?.label.split(' ')[0]}</span>
+              <span className="font-medium">{entry.siteName}</span>
+            </div>
+            <div className="text-sm">
+              <div className="text-muted-foreground">产品</div>
+              <div className="font-medium">{entry.productName}</div>
+            </div>
+            <div className="text-sm">
+              <div className="text-muted-foreground">SKU</div>
+              <div className="font-medium">{entry.skuSpecs}</div>
+              <div className="text-xs text-muted-foreground font-mono">{entry.skuCode}</div>
+            </div>
+          </div>
+
+          {/* 价格输入 */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">销售价格</label>
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-medium text-muted-foreground w-12">{entry.currency.symbol}</span>
+              <Input
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                className="text-lg"
+                autoFocus
+              />
+              <span className="text-muted-foreground">{entry.currency.code}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 p-4 border-t">
+          <Button variant="outline" onClick={onClose}>取消</Button>
+          <Button onClick={handleSave}>
+            <Save className="h-4 w-4 mr-2" />
+            保存
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- 主组件 ---
 export const PricesView: React.FC = () => {
   const [priceData, setPriceData] = useState<PriceEntry[]>(generatePriceData);
   const [searchTerm, setSearchTerm] = useState('');
   const [siteFilter, setSiteFilter] = useState<string>('all');
   const [productFilter, setProductFilter] = useState<string>('all');
+  const [editingEntry, setEditingEntry] = useState<PriceEntry | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
 
   // 获取唯一的站点和产品列表
@@ -212,7 +295,7 @@ export const PricesView: React.FC = () => {
                       <th className="h-11 px-4 text-left font-medium text-muted-foreground">产品</th>
                       <th className="h-11 px-4 text-left font-medium text-muted-foreground">SKU</th>
                       <th className="h-11 px-4 text-left font-medium text-muted-foreground w-32">币种</th>
-                      <th className="h-11 px-4 text-left font-medium text-muted-foreground w-40">价格</th>
+                      <th className="h-11 px-4 text-left font-medium text-muted-foreground w-32">价格</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -221,7 +304,8 @@ export const PricesView: React.FC = () => {
                       return (
                         <tr
                           key={entry.id}
-                          className="border-b last:border-0 hover:bg-muted/30 transition-colors"
+                          className="border-b last:border-0 hover:bg-muted/30 transition-colors cursor-pointer"
+                          onClick={() => setEditingEntry(entry)}
                         >
                           {/* 站点 */}
                           <td className="p-4">
@@ -252,17 +336,20 @@ export const PricesView: React.FC = () => {
                             </span>
                           </td>
                           
-                          {/* 价格 */}
+                          {/* 价格 - 点击编辑 */}
                           <td className="p-4">
-                            <div className="flex items-center gap-2">
-                              <span className="text-muted-foreground">{entry.currency.symbol}</span>
-                              <Input
-                                type="number"
-                                value={entry.price}
-                                onChange={(e) => updatePrice(entry.id, Number(e.target.value))}
-                                className="h-8 w-28"
-                              />
-                            </div>
+                            <button
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-primary/10 hover:bg-primary/20 transition-colors group"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingEntry(entry);
+                              }}
+                            >
+                              <span className="font-medium text-primary">
+                                {entry.currency.symbol} {entry.price.toLocaleString()}
+                              </span>
+                              <Edit className="h-3 w-3 text-primary/50 group-hover:text-primary transition-colors" />
+                            </button>
                           </td>
                         </tr>
                       );
@@ -274,6 +361,15 @@ export const PricesView: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* 价格编辑弹框 */}
+      {editingEntry && (
+        <PriceEditModal
+          entry={editingEntry}
+          onSave={updatePrice}
+          onClose={() => setEditingEntry(null)}
+        />
+      )}
     </div>
   );
 };

@@ -39,9 +39,6 @@ export const SettingsView: React.FC = () => {
                 placeholder="简单介绍一下自己..." 
             />
           </div>
-          <div className="flex justify-end">
-            <Button>保存更改</Button>
-          </div>
         </CardContent>
       </Card>
       
