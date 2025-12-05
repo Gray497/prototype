@@ -1,0 +1,5 @@
+{
+  "name": "Shadcn Admin Dashboard",
+  "description": "A modern, responsive admin dashboard framework built with React, Tailwind CSS, and Recharts, mimicking the Shadcn UI aesthetic.",
+  "requestFramePermissions": []
+}
