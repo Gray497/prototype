@@ -7,7 +7,8 @@ import {
   BarChart3,
   LogOut,
   Package,
-  FileText
+  FileText,
+  Globe
 } from 'lucide-react';
 import { NavItem } from '../types';
 
@@ -23,6 +24,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, currentView, 
     { title: '文章管理', href: 'articles', icon: FileText, variant: 'ghost' },
     { title: '产品管理', href: 'products', icon: Package, variant: 'ghost' },
     { title: '订单管理', href: 'orders', icon: ShoppingBag, variant: 'ghost' },
+    { title: '站点管理', href: 'sites', icon: Globe, variant: 'ghost' },
   ];
 
   const handleNavClick = (view: string) => {
