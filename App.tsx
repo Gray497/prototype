@@ -9,6 +9,7 @@ import { OrdersView } from './components/views/OrdersView';
 import { ProductsView } from './components/views/ProductsView';
 import { ProductDetailView } from './components/views/ProductDetailView';
 import { SitesView } from './components/views/SitesView';
+import { SiteDetailView } from './components/views/SiteDetailView';
 
 // 路由类型定义
 interface Route {
@@ -93,7 +94,11 @@ function App() {
         // 传递 onNavigate 让列表页可以跳转到详情页
         return <ProductsView onNavigate={navigate} />;
       case 'sites':
-        return <SitesView />;
+        // 如果有 id 参数，显示站点详情页
+        if (id) {
+          return <SiteDetailView siteId={id} onNavigate={navigate} />;
+        }
+        return <SitesView onNavigate={navigate} />;
       default:
         return (
           <div className="flex h-[50vh] flex-col items-center justify-center space-y-4 text-center">

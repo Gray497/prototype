@@ -144,12 +144,11 @@ const SKUAttributeEditor: React.FC<SKUAttributeEditorProps> = ({ attributes, onC
 // --- SKU 编辑弹窗组件 ---
 interface SKUEditModalProps {
   sku: SKU;
-  currencySymbol: string;
   onSave: (sku: SKU) => void;
   onClose: () => void;
 }
 
-const SKUEditModal: React.FC<SKUEditModalProps> = ({ sku, currencySymbol, onSave, onClose }) => {
+const SKUEditModal: React.FC<SKUEditModalProps> = ({ sku, onSave, onClose }) => {
   const [editingSku, setEditingSku] = useState<SKU>({ ...sku, attributes: [...sku.attributes] });
 
   const handleChange = (field: keyof SKU, value: string | number) => {
@@ -195,23 +194,13 @@ const SKUEditModal: React.FC<SKUEditModalProps> = ({ sku, currencySymbol, onSave
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <label className="text-sm font-medium">价格 ({currencySymbol})</label>
-                <Input
-                  type="number"
-                  value={editingSku.price}
-                  onChange={(e) => handleChange('price', Number(e.target.value))}
-                />
-              </div>
-              <div className="grid gap-2">
-                <label className="text-sm font-medium">库存</label>
-                <Input
-                  type="number"
-                  value={editingSku.stock}
-                  onChange={(e) => handleChange('stock', Number(e.target.value))}
-                />
-              </div>
+            <div className="grid gap-2">
+              <label className="text-sm font-medium">库存</label>
+              <Input
+                type="number"
+                value={editingSku.stock}
+                onChange={(e) => handleChange('stock', Number(e.target.value))}
+              />
             </div>
           </div>
 
@@ -360,7 +349,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
     );
   }
 
-  const currencySymbol = product.priceRange.includes("CNY") ? "¥" : "NT$";
   const editingSku = editingSkuId ? product.skus.find(s => s.id === editingSkuId) : null;
 
   return (
@@ -407,9 +395,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                 <div className="flex items-center gap-1.5">
                   <ShoppingCart className="h-4 w-4 text-muted-foreground" />
                   <span>销量: <strong>{product.sales}</strong></span>
-                </div>
-                <div className="text-primary font-semibold">
-                  {product.priceRange}
                 </div>
               </div>
             </div>
@@ -471,7 +456,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                         <th className="h-11 px-4 text-left font-medium text-muted-foreground">SKU 编码</th>
                         <th className="h-11 px-4 text-left font-medium text-muted-foreground">规格</th>
                         <th className="h-11 px-4 text-left font-medium text-muted-foreground min-w-[200px]">属性</th>
-                        <th className="h-11 px-4 text-left font-medium text-muted-foreground w-24">价格</th>
                         <th className="h-11 px-4 text-left font-medium text-muted-foreground w-20">库存</th>
                         <th className="h-11 px-4 text-center font-medium text-muted-foreground w-24">操作</th>
                       </tr>
@@ -504,9 +488,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                                 <span className="text-muted-foreground text-xs italic">暂无属性</span>
                               )}
                             </div>
-                          </td>
-                          <td className="p-4 font-medium">
-                            {currencySymbol} {sku.price.toLocaleString()}
                           </td>
                           <td className="p-4">
                             <span className={sku.stock < 10 ? 'text-destructive font-semibold' : ''}>
@@ -767,7 +748,6 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
       {editingSku && (
         <SKUEditModal
           sku={editingSku}
-          currencySymbol={currencySymbol}
           onSave={handleSkuSave}
           onClose={() => setEditingSkuId(null)}
         />
