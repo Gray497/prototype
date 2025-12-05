@@ -265,3 +265,4 @@ export const SkusTab: React.FC<SkusTabProps> = ({
     </Card>
   );
 };
+

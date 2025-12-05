@@ -1,4 +1,4 @@
-import { Site, Currency, PaymentMethod, ShippingMethod, TaxRule } from './types';
+import { Site, Currency, PaymentMethod, ShippingMethod, TaxRule, CodStore } from './types';
 
 // 预定义的货币
 export const currencies: Record<string, Currency> = {
@@ -9,19 +9,28 @@ export const currencies: Record<string, Currency> = {
   JPY: { code: 'JPY', symbol: '¥', name: '日元' },
 };
 
-// 预定义的支付方式
+// 货到付款门店选项
+export const codStores: CodStore[] = [
+  { id: '711', name: '7-11', description: '7-ELEVEN 超商取货付款' },
+  { id: 'family', name: '全家', description: 'FamilyMart 超商取货付款' },
+];
+
+// 预定义的支付方式 - 线上支付
+export const onlinePaymentMethods: PaymentMethod[] = [
+  { id: 'line_pay', name: 'LINE Pay', category: 'online', enabled: true },
+  { id: 'apple_pay', name: 'Apple Pay', category: 'online', enabled: true, comingSoon: true },
+];
+
+// 预定义的支付方式 - 货到付款
+export const codPaymentMethods: PaymentMethod[] = [
+  { id: 'cod_711', name: '7-11 取货付款', category: 'cod', enabled: true, stores: ['711'] },
+  { id: 'cod_family', name: '全家取货付款', category: 'cod', enabled: true, stores: ['family'] },
+];
+
+// 所有可用支付方式
 export const availablePaymentMethods: PaymentMethod[] = [
-  { id: 'stripe', name: 'Stripe (信用卡)', enabled: true },
-  { id: 'paypal', name: 'PayPal', enabled: true },
-  { id: 'apple_pay', name: 'Apple Pay', enabled: true },
-  { id: 'google_pay', name: 'Google Pay', enabled: true },
-  { id: 'line_pay', name: 'LINE Pay', enabled: true },
-  { id: 'ecpay', name: '綠界金流', enabled: true },
-  { id: 'newebpay', name: '藍新金流', enabled: true },
-  { id: 'alipay', name: '支付宝', enabled: true },
-  { id: 'wechat_pay', name: '微信支付', enabled: true },
-  { id: 'bank_transfer', name: '银行转账', enabled: true },
-  { id: 'cod', name: '货到付款', enabled: true },
+  ...onlinePaymentMethods,
+  ...codPaymentMethods,
 ];
 
 // 预定义的配送方式
@@ -46,11 +55,9 @@ export const mockSites: Site[] = [
     language: 'zh-TW',
     currency: currencies.TWD,
     paymentMethods: [
-      { id: 'stripe', name: 'Stripe (信用卡)', enabled: true },
-      { id: 'line_pay', name: 'LINE Pay', enabled: true },
-      { id: 'ecpay', name: '綠界金流', enabled: true },
-      { id: 'newebpay', name: '藍新金流', enabled: true },
-      { id: 'cod', name: '货到付款', enabled: true },
+      { id: 'line_pay', name: 'LINE Pay', category: 'online', enabled: true },
+      { id: 'cod_711', name: '7-11 取货付款', category: 'cod', enabled: true, stores: ['711'] },
+      { id: 'cod_family', name: '全家取货付款', category: 'cod', enabled: true, stores: ['family'] },
     ],
     shippingMethods: [
       { id: 'standard', name: '宅配', description: '黑猫/新竹物流', baseCost: 60, estimatedDays: '1-2', enabled: true },
@@ -76,10 +83,7 @@ export const mockSites: Site[] = [
     language: 'en',
     currency: currencies.USD,
     paymentMethods: [
-      { id: 'stripe', name: 'Stripe (Credit Card)', enabled: true },
-      { id: 'paypal', name: 'PayPal', enabled: true },
-      { id: 'apple_pay', name: 'Apple Pay', enabled: true },
-      { id: 'google_pay', name: 'Google Pay', enabled: true },
+      { id: 'line_pay', name: 'LINE Pay', category: 'online', enabled: true },
     ],
     shippingMethods: [
       { id: 'standard', name: 'Standard Shipping', description: 'USPS/UPS Ground', baseCost: 5.99, estimatedDays: '5-7', enabled: true },
@@ -105,11 +109,7 @@ export const mockSites: Site[] = [
     language: 'en',
     currency: currencies.EUR,
     paymentMethods: [
-      { id: 'stripe', name: 'Stripe (Credit Card)', enabled: true },
-      { id: 'paypal', name: 'PayPal', enabled: true },
-      { id: 'apple_pay', name: 'Apple Pay', enabled: true },
-      { id: 'google_pay', name: 'Google Pay', enabled: true },
-      { id: 'bank_transfer', name: 'SEPA Bank Transfer', enabled: true },
+      { id: 'line_pay', name: 'LINE Pay', category: 'online', enabled: true },
     ],
     shippingMethods: [
       { id: 'standard', name: 'Standard Delivery', description: 'DPD/Hermes', baseCost: 4.99, estimatedDays: '3-5', enabled: true },
@@ -134,9 +134,7 @@ export const mockSites: Site[] = [
     language: 'zh-CN',
     currency: currencies.CNY,
     paymentMethods: [
-      { id: 'alipay', name: '支付宝', enabled: true },
-      { id: 'wechat_pay', name: '微信支付', enabled: true },
-      { id: 'bank_transfer', name: '银行卡支付', enabled: true },
+      { id: 'line_pay', name: 'LINE Pay', category: 'online', enabled: true },
     ],
     shippingMethods: [
       { id: 'sf_express', name: '顺丰速运', description: '次日达', baseCost: 12, estimatedDays: '1-2', enabled: true },
@@ -173,3 +171,4 @@ export const regionOptions = [
   { value: 'CN', label: '🇨🇳 中国', name: 'China' },
   { value: 'JP', label: '🇯🇵 日本', name: 'Japan' },
 ];
+

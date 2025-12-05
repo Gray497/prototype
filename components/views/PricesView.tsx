@@ -373,3 +373,4 @@ export const PricesView: React.FC = () => {
     </div>
   );
 };
+

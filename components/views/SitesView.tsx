@@ -180,3 +180,4 @@ export const SitesView: React.FC<SitesViewProps> = ({ onNavigate }) => {
     </div>
   );
 };
+

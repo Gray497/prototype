@@ -490,3 +490,4 @@ export const SiteTemplatesView: React.FC = () => {
     </div>
   );
 };
+

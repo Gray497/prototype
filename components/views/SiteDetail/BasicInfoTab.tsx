@@ -105,3 +105,4 @@ export const BasicInfoTab: React.FC<BasicInfoTabProps> = ({
     </Card>
   );
 };
+

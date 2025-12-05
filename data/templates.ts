@@ -73,3 +73,4 @@ export const mockTemplates: SiteTemplate[] = [
     updatedAt: '2023-10-30'
   },
 ];
+

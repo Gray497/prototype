@@ -185,3 +185,4 @@ export const SiteDetailView: React.FC<SiteDetailViewProps> = ({ siteId, onNaviga
     </div>
   );
 };
+

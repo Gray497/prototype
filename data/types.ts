@@ -102,13 +102,26 @@ export interface Currency {
   name: string;      // 美元, 欧元, 新台币
 }
 
+// 支付方式类型
+export type PaymentCategory = 'online' | 'cod';  // 线上支付 / 货到付款
+
 // 支付方式
 export interface PaymentMethod {
   id: string;
   name: string;
+  category: PaymentCategory;
   icon?: string;
   enabled: boolean;
+  comingSoon?: boolean;  // 即将推出
+  stores?: string[];     // 货到付款适用的门店（711/全家等）
   config?: Record<string, unknown>;
+}
+
+// 货到付款门店选项
+export interface CodStore {
+  id: string;
+  name: string;
+  description?: string;
 }
 
 // 配送方式
@@ -200,3 +213,4 @@ export interface RecentSale {
   amount: string;
   avatar: string;
 }
+
