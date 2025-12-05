@@ -20,13 +20,9 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, currentView, onChangeView }) => {
   const navItems: NavItem[] = [
-    { title: '仪表盘', href: 'dashboard', icon: LayoutDashboard, variant: 'default' },
     { title: '文章管理', href: 'articles', icon: FileText, variant: 'ghost' },
-    { title: '客户管理', href: 'customers', icon: Users, variant: 'ghost' },
     { title: '产品管理', href: 'products', icon: Package, variant: 'ghost' },
     { title: '订单管理', href: 'orders', icon: ShoppingBag, variant: 'ghost' },
-    { title: '数据分析', href: 'analytics', icon: BarChart3, variant: 'ghost' },
-    { title: '系统设置', href: 'settings', icon: Settings, variant: 'ghost' },
   ];
 
   const handleNavClick = (view: string) => {

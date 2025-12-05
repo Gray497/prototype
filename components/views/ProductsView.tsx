@@ -376,9 +376,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSave, onCancel
 
 // --- 主视图组件 ---
 
-export const ProductsView: React.FC = () => {
-    // 视图状态：'list' | 'create' | 'edit'
-    const [viewMode, setViewMode] = useState<'list' | 'create' | 'edit'>('list');
+interface ProductsViewProps {
+    onNavigate?: (path: string) => void;
+}
+
+export const ProductsView: React.FC<ProductsViewProps> = ({ onNavigate }) => {
+    // 视图状态：'list' | 'create' (移除 'edit'，改用路由跳转)
+    const [viewMode, setViewMode] = useState<'list' | 'create'>('list');
     const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
     
     // 列表状态
@@ -405,10 +409,11 @@ export const ProductsView: React.FC = () => {
         }
     };
 
-    // 进入编辑模式
+    // 进入编辑模式 - 使用路由跳转到详情页
     const handleEditClick = (product: Product) => {
-      setEditingProduct(product);
-      setViewMode('edit');
+      if (onNavigate) {
+        onNavigate(`products/${product.id}`);
+      }
     };
 
     // 进入创建模式
@@ -417,18 +422,14 @@ export const ProductsView: React.FC = () => {
       setViewMode('create');
     };
 
-    // 保存处理（模拟）
+    // 保存处理（模拟）- 仅用于创建新商品
     const handleSave = (savedProduct: Product) => {
-      if (viewMode === 'create') {
-        setProducts([savedProduct, ...products]);
-      } else {
-        setProducts(products.map(p => p.id === savedProduct.id ? savedProduct : p));
-      }
+      setProducts([savedProduct, ...products]);
       setViewMode('list');
     };
 
-    // 如果处于编辑或创建模式，渲染表单
-    if (viewMode !== 'list') {
+    // 如果处于创建模式，渲染表单
+    if (viewMode === 'create') {
       return (
         <ProductForm 
           initialData={editingProduct} 

@@ -7,11 +7,42 @@ import { CustomersView } from './components/views/CustomersView';
 import { ArticlesView } from './components/views/ArticlesView';
 import { OrdersView } from './components/views/OrdersView';
 import { ProductsView } from './components/views/ProductsView';
+import { ProductDetailView } from './components/views/ProductDetailView';
+
+// 路由类型定义
+interface Route {
+  view: string;
+  id?: string;
+}
+
+// 解析路由
+const parseRoute = (path: string): Route => {
+  const parts = path.split('/').filter(Boolean);
+  if (parts.length >= 2) {
+    return { view: parts[0], id: parts[1] };
+  }
+  return { view: parts[0] || 'dashboard' };
+};
+
+// 构建路由路径
+const buildRoute = (view: string, id?: string): string => {
+  return id ? `${view}/${id}` : view;
+};
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [currentView, setCurrentView] = useState('dashboard');
+  const [currentRoute, setCurrentRoute] = useState<Route>({ view: 'dashboard' });
   const [isDark, setIsDark] = useState(false);
+
+  // 导航函数
+  const navigate = (path: string) => {
+    setCurrentRoute(parseRoute(path));
+  };
+
+  // 兼容旧的 setCurrentView 调用
+  const setCurrentView = (view: string) => {
+    setCurrentRoute({ view });
+  };
 
   useEffect(() => {
     // Check system preference or localStorage
@@ -40,7 +71,9 @@ function App() {
   };
 
   const renderView = () => {
-    switch (currentView) {
+    const { view, id } = currentRoute;
+    
+    switch (view) {
       case 'dashboard':
         return <DashboardView />;
       case 'settings':
@@ -52,12 +85,17 @@ function App() {
       case 'orders':
         return <OrdersView />;
       case 'products':
-        return <ProductsView />;
+        // 如果有 id 参数，显示产品详情页
+        if (id) {
+          return <ProductDetailView productId={id} onNavigate={navigate} />;
+        }
+        // 传递 onNavigate 让列表页可以跳转到详情页
+        return <ProductsView onNavigate={navigate} />;
       default:
         return (
           <div className="flex h-[50vh] flex-col items-center justify-center space-y-4 text-center">
             <div className="text-4xl font-bold text-muted-foreground/30">开发中</div>
-            <p className="text-muted-foreground">该页面 ({currentView}) 尚未实现。</p>
+            <p className="text-muted-foreground">该页面 ({view}) 尚未实现。</p>
           </div>
         );
     }
@@ -68,7 +106,7 @@ function App() {
       <Sidebar 
         isOpen={isSidebarOpen} 
         onClose={() => setIsSidebarOpen(false)} 
-        currentView={currentView}
+        currentView={currentRoute.view}
         onChangeView={setCurrentView}
       />
       
