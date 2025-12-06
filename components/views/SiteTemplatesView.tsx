@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { 
-  Plus, 
   Layout,
   Search,
   Globe,
@@ -26,24 +25,15 @@ import {
 
 // --- 模板编辑弹框 ---
 interface TemplateEditModalProps {
-  template: SiteTemplate | null;
-  isNew: boolean;
+  template: SiteTemplate;
   onSave: (template: SiteTemplate) => void;
   onClose: () => void;
 }
 
-const TemplateEditModal: React.FC<TemplateEditModalProps> = ({ template, isNew, onSave, onClose }) => {
-  const [formData, setFormData] = useState<SiteTemplate>(template || {
-    id: `tpl-${Date.now()}`,
-    name: '',
-    type: 'single',
-    description: '',
-    thumbnail: '',
-    boundSiteIds: [],
-    config: {},
-    status: 'draft',
-    createdAt: new Date().toISOString().split('T')[0],
-    updatedAt: new Date().toISOString().split('T')[0]
+const TemplateEditModal: React.FC<TemplateEditModalProps> = ({ template, onSave, onClose }) => {
+  const [formData, setFormData] = useState<SiteTemplate>({
+    ...template,
+    boundSiteIds: [...template.boundSiteIds]
   });
 
   const handleChange = (field: keyof SiteTemplate, value: any) => {
@@ -73,9 +63,7 @@ const TemplateEditModal: React.FC<TemplateEditModalProps> = ({ template, isNew, 
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-background">
-          <h3 className="text-lg font-semibold">
-            {isNew ? '创建模板' : '编辑模板'}
-          </h3>
+          <h3 className="text-lg font-semibold">编辑模板</h3>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
@@ -270,7 +258,6 @@ export const SiteTemplatesView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [editingTemplate, setEditingTemplate] = useState<SiteTemplate | null>(null);
-  const [isNewTemplate, setIsNewTemplate] = useState(false);
   const [syncingTemplate, setSyncingTemplate] = useState<SiteTemplate | null>(null);
 
   const filteredTemplates = templates.filter(tpl => {
@@ -282,13 +269,8 @@ export const SiteTemplatesView: React.FC = () => {
   });
 
   const handleSaveTemplate = (template: SiteTemplate) => {
-    if (isNewTemplate) {
-      setTemplates(prev => [...prev, template]);
-    } else {
-      setTemplates(prev => prev.map(t => t.id === template.id ? template : t));
-    }
+    setTemplates(prev => prev.map(t => t.id === template.id ? template : t));
     setEditingTemplate(null);
-    setIsNewTemplate(false);
   };
 
   const handleDeleteTemplate = (templateId: string) => {
@@ -301,11 +283,6 @@ export const SiteTemplatesView: React.FC = () => {
     alert(`模板「${template.name}」已同步到 ${template.boundSiteIds.length} 个站点！`);
   };
 
-  const handleCreateTemplate = () => {
-    setIsNewTemplate(true);
-    setEditingTemplate(null);
-  };
-
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -316,10 +293,6 @@ export const SiteTemplatesView: React.FC = () => {
           </h2>
           <p className="text-muted-foreground">管理站点模板，支持一键同步到绑定站点。</p>
         </div>
-        <Button onClick={handleCreateTemplate}>
-          <Plus className="mr-2 h-4 w-4" />
-          创建模板
-        </Button>
       </div>
 
       <Card>
@@ -442,10 +415,7 @@ export const SiteTemplatesView: React.FC = () => {
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => {
-                          setIsNewTemplate(false);
-                          setEditingTemplate(template);
-                        }}
+                        onClick={() => setEditingTemplate(template)}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -467,14 +437,12 @@ export const SiteTemplatesView: React.FC = () => {
       </Card>
 
       {/* 编辑弹框 */}
-      {(editingTemplate || isNewTemplate) && (
+      {editingTemplate && (
         <TemplateEditModal
           template={editingTemplate}
-          isNew={isNewTemplate}
           onSave={handleSaveTemplate}
           onClose={() => {
             setEditingTemplate(null);
-            setIsNewTemplate(false);
           }}
         />
       )}

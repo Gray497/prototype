@@ -5,7 +5,6 @@ import { Input } from '../ui/Input';
 import { 
   MoreHorizontal, 
   TagIcon, 
-  Plus,
   Calendar,
   Search,
   Hash,
@@ -190,13 +189,6 @@ export const TagsView: React.FC = () => {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">标签管理</h2>
           <p className="text-muted-foreground">管理文章和产品的分类标签。</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline">导出标签</Button>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            新增标签
-          </Button>
         </div>
       </div>
 

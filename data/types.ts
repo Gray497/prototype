@@ -225,6 +225,8 @@ export interface Lead {
   siteId: string;              // 站点
   siteName?: string;           // 站点名称（用于展示）
   orderId?: string;            // 关联订单
+  productId?: string;          // 关联产品
+  skuId?: string;              // 关联 SKU
   type: LeadType;              // 类型（手相、面相）
   images: string[];            // 图片列表
   createdAt: string;           // 创建时间

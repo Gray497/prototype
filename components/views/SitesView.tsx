@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { 
-  Plus, 
   Trash2, 
   Globe,
   Search,
@@ -12,7 +11,6 @@ import {
 import { 
   Site,
   mockSites, 
-  currencies, 
   languageOptions, 
   regionOptions
 } from '../../data';
@@ -37,28 +35,6 @@ export const SitesView: React.FC<SitesViewProps> = ({ onNavigate }) => {
     }
   };
 
-  const addNewSite = () => {
-    const newSite: Site = {
-      id: `site-${Date.now()}`,
-      name: '新站点',
-      region: 'US',
-      language: 'en',
-      currency: currencies.USD,
-      paymentMethods: [],
-      shippingMethods: [],
-      taxRules: [],
-      availableSkuIds: [],
-      status: 'inactive',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    setSites(prev => [...prev, newSite]);
-    // 跳转到新站点详情页
-    if (onNavigate) {
-      onNavigate(`sites/${newSite.id}`);
-    }
-  };
-
   const deleteSite = (siteId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!confirm('确定删除该站点吗？')) return;
@@ -72,10 +48,6 @@ export const SitesView: React.FC<SitesViewProps> = ({ onNavigate }) => {
           <h2 className="text-3xl font-bold tracking-tight">站点管理</h2>
           <p className="text-muted-foreground">管理多地区站点配置、支付和配送方式。</p>
         </div>
-        <Button onClick={addNewSite}>
-          <Plus className="mr-2 h-4 w-4" />
-          新建站点
-        </Button>
       </div>
 
       <Card>

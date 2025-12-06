@@ -16,6 +16,7 @@ import {
   Search
 } from 'lucide-react';
 import { Lead } from '../../data/types';
+import { simpleProducts, getAllSkus } from '../../data';
 
 // 模拟线索数据
 const leadsData: Lead[] = [
@@ -27,6 +28,8 @@ const leadsData: Lead[] = [
     siteId: 'site-1',
     siteName: '玄学工作室-大陆站',
     orderId: 'ORD-8803',
+    productId: 'SPU-003',
+    skuId: 'SKU-003-1',
     type: '手相',
     images: ['/placeholder-palm-1.jpg', '/placeholder-palm-2.jpg'],
     createdAt: '2024-12-05 10:30:00',
@@ -42,6 +45,8 @@ const leadsData: Lead[] = [
     siteId: 'site-2',
     siteName: '玄学工作室-台湾站',
     orderId: undefined,
+    productId: undefined,
+    skuId: undefined,
     type: '面相',
     images: ['/placeholder-face-1.jpg'],
     createdAt: '2024-12-05 09:15:00',
@@ -57,6 +62,8 @@ const leadsData: Lead[] = [
     siteId: 'site-1',
     siteName: '玄学工作室-大陆站',
     orderId: 'ORD-8810',
+    productId: 'SPU-001',
+    skuId: 'SKU-001-3',
     type: '手相',
     images: ['/placeholder-palm-3.jpg', '/placeholder-palm-4.jpg', '/placeholder-palm-5.jpg'],
     createdAt: '2024-12-04 16:45:00',
@@ -72,6 +79,8 @@ const leadsData: Lead[] = [
     siteId: 'site-3',
     siteName: '玄学工作室-日本站',
     orderId: undefined,
+    productId: undefined,
+    skuId: undefined,
     type: '面相',
     images: ['/placeholder-face-2.jpg', '/placeholder-face-3.jpg'],
     createdAt: '2024-12-04 14:20:00',
@@ -87,6 +96,8 @@ const leadsData: Lead[] = [
     siteId: 'site-2',
     siteName: '玄学工作室-台湾站',
     orderId: 'ORD-8815',
+    productId: 'SPU-002',
+    skuId: 'SKU-002-2',
     type: '手相',
     images: ['/placeholder-palm-6.jpg'],
     createdAt: '2024-12-03 11:00:00',
@@ -122,6 +133,15 @@ const getTypeColor = (type: string) => {
 
 export const LeadsView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const skuOptions = getAllSkus();
+  const productOptions = simpleProducts;
+  const [leadProductMap, setLeadProductMap] = useState<Record<string, { productId?: string; skuId?: string }>>(() => {
+    const initial: Record<string, { productId?: string; skuId?: string }> = {};
+    leadsData.forEach((lead) => {
+      initial[lead.id] = { productId: lead.productId, skuId: lead.skuId };
+    });
+    return initial;
+  });
 
   const filteredLeads = leadsData.filter(lead => 
     lead.name.includes(searchTerm) || 
@@ -130,6 +150,20 @@ export const LeadsView: React.FC = () => {
     lead.id.includes(searchTerm)
   );
 
+  const handleProductChange = (leadId: string, productId: string) => {
+    setLeadProductMap(prev => ({
+      ...prev,
+      [leadId]: { productId: productId || undefined, skuId: undefined }
+    }));
+  };
+
+  const handleSkuChange = (leadId: string, skuId: string) => {
+    setLeadProductMap(prev => ({
+      ...prev,
+      [leadId]: { ...(prev[leadId] || {}), skuId: skuId || undefined }
+    }));
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -137,13 +171,7 @@ export const LeadsView: React.FC = () => {
           <h2 className="text-3xl font-bold tracking-tight">线索管理</h2>
           <p className="text-muted-foreground">管理玄学服务的客户线索信息。</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline">导出线索</Button>
-          <Button>
-            <Sparkles className="mr-2 h-4 w-4" />
-            新增线索
-          </Button>
-        </div>
+        <Button variant="outline">导出线索</Button>
       </div>
 
       {/* 统计卡片 */}
@@ -230,6 +258,9 @@ export const LeadsView: React.FC = () => {
                     关联订单
                   </th>
                   <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                    产品/SKU 管理
+                  </th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                     类型
                   </th>
                   <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
@@ -250,7 +281,12 @@ export const LeadsView: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="[&_tr:last-child]:border-0">
-                {filteredLeads.map((lead) => (
+                {filteredLeads.map((lead) => {
+                  const selection = leadProductMap[lead.id] || {};
+                  const product = productOptions.find(p => p.id === selection.productId);
+                  const sku = skuOptions.find(s => s.id === selection.skuId);
+                  const skuList = selection.productId ? skuOptions.filter(s => s.productId === selection.productId) : [];
+                  return (
                   <tr key={lead.id} className="border-b transition-colors hover:bg-muted/50">
                     <td className="p-4 align-middle">
                       <div className="flex flex-col">
@@ -289,6 +325,35 @@ export const LeadsView: React.FC = () => {
                       )}
                     </td>
                     <td className="p-4 align-middle">
+                      <div className="space-y-2 min-w-[220px]">
+                        <select
+                          className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                          value={selection.productId || ''}
+                          onChange={(e) => handleProductChange(lead.id, e.target.value)}
+                        >
+                          <option value="">未关联产品</option>
+                          {productOptions.map((p) => (
+                            <option key={p.id} value={p.id}>{p.name}</option>
+                          ))}
+                        </select>
+                        <select
+                          className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                          value={selection.skuId || ''}
+                          onChange={(e) => handleSkuChange(lead.id, e.target.value)}
+                          disabled={!selection.productId}
+                        >
+                          <option value="">{selection.productId ? '请选择 SKU' : '请先选择产品'}</option>
+                          {skuList.map((s) => (
+                            <option key={s.id} value={s.id}>{s.specs || s.code}</option>
+                          ))}
+                        </select>
+                        <div className="text-xs text-muted-foreground">
+                          {product ? `${product.name}` : '未选择产品'}
+                          {sku ? ` / ${sku.specs || sku.code}` : selection.productId ? ' / 未选择 SKU' : ''}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 align-middle">
                       <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getTypeColor(lead.type)}`}>
                         {lead.type}
                       </span>
@@ -325,7 +390,8 @@ export const LeadsView: React.FC = () => {
                       </Button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
