@@ -43,11 +43,20 @@ export const OrderDetailView: React.FC<OrderDetailViewProps> = ({ orderId, order
   const [form, setForm] = useState<Order | null>(order || null);
   const [editingOrder, setEditingOrder] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(false);
+  const [shippingModalOpen, setShippingModalOpen] = useState(false);
+  const [shippingCompany, setShippingCompany] = useState('');
+  const [shippingTracking, setShippingTracking] = useState('');
+  const [smsStatus, setSmsStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const mapUrl = order?.shipping.address ? `https://www.google.com/maps/search/${encodeURIComponent(order.shipping.address)}` : '';
+  const ipLookupUrl = order?.ip ? `https://ipinfo.io/${order.ip}` : '';
 
   useEffect(() => {
     setForm(order || null);
     setEditingOrder(false);
     setEditingCustomer(false);
+    setShippingCompany(order?.shipping.company || '');
+    setShippingTracking(order?.shipping.trackingNo || '');
+    setSmsStatus('idle');
   }, [order]);
 
   if (!order) {
@@ -94,10 +103,9 @@ export const OrderDetailView: React.FC<OrderDetailViewProps> = ({ orderId, order
           <Button
             variant="default"
             onClick={() => {
-              if (!form) return;
-              const next = { ...form, shippingStatus: '已发货' as ShippingStatus };
-              setForm(next);
-              onUpdateOrders((prev) => prev.map((o) => (o.id === next.id ? next : o)));
+              setShippingCompany(order.shipping.company || '');
+              setShippingTracking(order.shipping.trackingNo || '');
+              setShippingModalOpen(true);
             }}
             disabled={order.shippingStatus === '已发货' || order.shippingStatus === '已交付'}
           >
@@ -270,6 +278,122 @@ export const OrderDetailView: React.FC<OrderDetailViewProps> = ({ orderId, order
           </div>
         </CardContent>
       </Card>
+
+      {shippingModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-xl rounded-lg bg-white p-6 shadow-xl space-y-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <CardTitle>发货信息</CardTitle>
+                <p className="text-sm text-muted-foreground">选择快递公司并输入快递单号</p>
+              </div>
+              <Button variant="ghost" onClick={() => setShippingModalOpen(false)}>
+                关闭
+              </Button>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="flex flex-col gap-1">
+                <span className="text-xs text-muted-foreground">快递公司</span>
+                <select
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm outline-none focus:ring-2 focus:ring-ring"
+                  value={shippingCompany}
+                  onChange={(e) => setShippingCompany(e.target.value)}
+                >
+                  <option value="">请选择</option>
+                  <option value="顺丰">顺丰</option>
+                  <option value="圆通">圆通</option>
+                  <option value="中通">中通</option>
+                  <option value="申通">申通</option>
+                  <option value="韵达">韵达</option>
+                  <option value="黑猫宅急便">黑猫宅急便</option>
+                  <option value="711">711</option>
+                  <option value="全家">全家</option>
+                  <option value="其他">其他</option>
+                </select>
+              </label>
+
+              <label className="flex flex-col gap-1">
+                <span className="text-xs text-muted-foreground">快递单号</span>
+                <Input value={shippingTracking} onChange={(e) => setShippingTracking(e.target.value)} placeholder="请输入快递单号" />
+              </label>
+            </div>
+
+            <div className="space-y-3 rounded-lg border p-3">
+              <div className="flex items-center justify-between">
+                <div className="text-sm">
+                  <div className="text-muted-foreground">收货地址</div>
+                  <div className="text-foreground">{order.shipping.address}</div>
+                </div>
+                {mapUrl ? (
+                  <a
+                    className="text-sm text-primary hover:underline"
+                    href={mapUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    地图打开
+                  </a>
+                ) : null}
+              </div>
+
+              <div className="flex items-center justify-between text-sm">
+                <div>
+                  <div className="text-muted-foreground">IP 地址</div>
+                  <div className="text-foreground">{order.ip || '—'}</div>
+                </div>
+                {ipLookupUrl ? (
+                  <a className="text-primary hover:underline" href={ipLookupUrl} target="_blank" rel="noreferrer">
+                    查看归属地
+                  </a>
+                ) : (
+                  <span className="text-xs text-muted-foreground">无 IP 信息</span>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between text-sm">
+                <div>
+                  <div className="text-muted-foreground">手机号</div>
+                  <div className="text-foreground">{order.customer.phone}</div>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={smsStatus === 'sending'}
+                  onClick={() => {
+                    setSmsStatus('sending');
+                    setTimeout(() => setSmsStatus('sent'), 800);
+                  }}
+                >
+                  {smsStatus === 'sent' ? '短信已发送' : smsStatus === 'sending' ? '发送中...' : '发送短信验证'}
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShippingModalOpen(false)}>
+                取消
+              </Button>
+              <Button
+                onClick={() => {
+                  if (!form) return;
+                  const next = {
+                    ...form,
+                    shipping: { ...form.shipping, company: shippingCompany, trackingNo: shippingTracking },
+                    shippingStatus: '已发货' as ShippingStatus
+                  };
+                  setForm(next);
+                  onUpdateOrders((prev) => prev.map((o) => (o.id === next.id ? next : o)));
+                  setShippingModalOpen(false);
+                }}
+                disabled={!shippingTracking}
+              >
+                确认发货
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
