@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
-import { DashboardView } from './components/views/DashboardView';
 import { SettingsView } from './components/views/SettingsView';
 import { CustomersView } from './components/views/CustomersView';
 import { ArticlesView } from './components/views/ArticlesView';
 import { ArticleDetailView } from './components/views/ArticleDetailView';
 import { OrdersView } from './components/views/OrdersView';
+import { OrderDetailView } from './components/views/OrderDetailView';
 import { ProductsView } from './components/views/ProductsView';
 import { ProductDetailView } from './components/views/ProductDetailView';
 import { SitesView } from './components/views/SitesView';
@@ -20,6 +20,7 @@ import { LeadsView } from './components/views/LeadsView';
 // 系统管理
 import { UsersView } from './components/views/UsersView';
 import { RolesView } from './components/views/RolesView';
+import { Order, initialOrders } from './data';
 
 // 路由类型定义
 interface Route {
@@ -33,7 +34,7 @@ const parseRoute = (path: string): Route => {
   if (parts.length >= 2) {
     return { view: parts[0], id: parts[1] };
   }
-  return { view: parts[0] || 'dashboard' };
+  return { view: parts[0] || 'orders' };
 };
 
 // 构建路由路径
@@ -43,8 +44,9 @@ const buildRoute = (view: string, id?: string): string => {
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [currentRoute, setCurrentRoute] = useState<Route>({ view: 'dashboard' });
+  const [currentRoute, setCurrentRoute] = useState<Route>({ view: 'orders' });
   const [isDark, setIsDark] = useState(false);
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
 
   // 导航函数
   const navigate = (path: string) => {
@@ -86,8 +88,6 @@ function App() {
     const { view, id } = currentRoute;
     
     switch (view) {
-      case 'dashboard':
-        return <DashboardView />;
       case 'settings':
         return <SettingsView />;
       case 'customers':
@@ -99,13 +99,32 @@ function App() {
         }
         return <ArticlesView onNavigate={navigate} />;
       case 'orders':
-        return <OrdersView />;
+        if (id) {
+          return (
+            <OrderDetailView
+              orderId={id}
+              orders={orders}
+              onNavigate={navigate}
+            />
+          );
+        }
+        return <OrdersView orders={orders} onNavigate={navigate} />;
       case 'products':
-        // 如果有 id 参数，显示产品详情页
+        // 如果 id 是订单编号，复用 products/:id 路由展示订单详情
+        if (id?.startsWith('ORD-')) {
+          return (
+            <OrderDetailView
+              orderId={id}
+              orders={orders}
+              onNavigate={navigate}
+            />
+          );
+        }
+        // 产品详情
         if (id) {
           return <ProductDetailView productId={id} onNavigate={navigate} />;
         }
-        // 传递 onNavigate 让列表页可以跳转到详情页
+        // 产品列表
         return <ProductsView onNavigate={navigate} />;
       case 'sites':
         // 如果有 id 参数，显示站点详情页
