@@ -31,6 +31,13 @@ const KeyValue = ({ label, value, icon }: { label: string; value?: string; icon?
   </div>
 );
 
+const Editable = ({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) => (
+  <label className="flex flex-col gap-1">
+    <span className="text-xs text-muted-foreground">{label}</span>
+    <Input value={value} onChange={(e) => onChange(e.target.value)} />
+  </label>
+);
+
 export const OrderDetailView: React.FC<OrderDetailViewProps> = ({ orderId, orders, onUpdateOrders, onNavigate }) => {
   const order = useMemo(() => orders.find((o) => o.id === orderId), [orders, orderId]);
   const [form, setForm] = useState<Order | null>(order || null);
@@ -115,7 +122,6 @@ export const OrderDetailView: React.FC<OrderDetailViewProps> = ({ orderId, order
         <CardHeader className="flex items-center justify-between">
           <div>
             <CardTitle>订单信息</CardTitle>
-            <p className="text-sm text-muted-foreground">按需求图字段展示，可编辑</p>
           </div>
           <div className="flex gap-2">
             {editingOrder ? (

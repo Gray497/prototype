@@ -135,13 +135,6 @@ export const LeadsView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const skuOptions = getAllSkus();
   const productOptions = simpleProducts;
-  const [leadProductMap, setLeadProductMap] = useState<Record<string, { productId?: string; skuId?: string }>>(() => {
-    const initial: Record<string, { productId?: string; skuId?: string }> = {};
-    leadsData.forEach((lead) => {
-      initial[lead.id] = { productId: lead.productId, skuId: lead.skuId };
-    });
-    return initial;
-  });
 
   const filteredLeads = leadsData.filter(lead => 
     lead.name.includes(searchTerm) || 
@@ -149,20 +142,6 @@ export const LeadsView: React.FC = () => {
     lead.sessionId.includes(searchTerm) ||
     lead.id.includes(searchTerm)
   );
-
-  const handleProductChange = (leadId: string, productId: string) => {
-    setLeadProductMap(prev => ({
-      ...prev,
-      [leadId]: { productId: productId || undefined, skuId: undefined }
-    }));
-  };
-
-  const handleSkuChange = (leadId: string, skuId: string) => {
-    setLeadProductMap(prev => ({
-      ...prev,
-      [leadId]: { ...(prev[leadId] || {}), skuId: skuId || undefined }
-    }));
-  };
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -258,7 +237,7 @@ export const LeadsView: React.FC = () => {
                     关联订单
                   </th>
                   <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                    产品/SKU 管理
+                    产品/SKU
                   </th>
                   <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                     类型
@@ -282,10 +261,8 @@ export const LeadsView: React.FC = () => {
               </thead>
               <tbody className="[&_tr:last-child]:border-0">
                 {filteredLeads.map((lead) => {
-                  const selection = leadProductMap[lead.id] || {};
-                  const product = productOptions.find(p => p.id === selection.productId);
-                  const sku = skuOptions.find(s => s.id === selection.skuId);
-                  const skuList = selection.productId ? skuOptions.filter(s => s.productId === selection.productId) : [];
+                  const product = lead.productId ? productOptions.find(p => p.id === lead.productId) : undefined;
+                  const sku = lead.skuId ? skuOptions.find(s => s.id === lead.skuId) : undefined;
                   return (
                   <tr key={lead.id} className="border-b transition-colors hover:bg-muted/50">
                     <td className="p-4 align-middle">
@@ -325,31 +302,12 @@ export const LeadsView: React.FC = () => {
                       )}
                     </td>
                     <td className="p-4 align-middle">
-                      <div className="space-y-2 min-w-[220px]">
-                        <select
-                          className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-                          value={selection.productId || ''}
-                          onChange={(e) => handleProductChange(lead.id, e.target.value)}
-                        >
-                          <option value="">未关联产品</option>
-                          {productOptions.map((p) => (
-                            <option key={p.id} value={p.id}>{p.name}</option>
-                          ))}
-                        </select>
-                        <select
-                          className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-                          value={selection.skuId || ''}
-                          onChange={(e) => handleSkuChange(lead.id, e.target.value)}
-                          disabled={!selection.productId}
-                        >
-                          <option value="">{selection.productId ? '请选择 SKU' : '请先选择产品'}</option>
-                          {skuList.map((s) => (
-                            <option key={s.id} value={s.id}>{s.specs || s.code}</option>
-                          ))}
-                        </select>
+                      <div className="space-y-1 min-w-[220px]">
+                        <div className="text-sm font-medium">
+                          {product ? product.name : '未关联产品'}
+                        </div>
                         <div className="text-xs text-muted-foreground">
-                          {product ? `${product.name}` : '未选择产品'}
-                          {sku ? ` / ${sku.specs || sku.code}` : selection.productId ? ' / 未选择 SKU' : ''}
+                          {sku ? `${sku.specs || sku.code}` : product ? '未关联 SKU' : '无 SKU 信息'}
                         </div>
                       </div>
                     </td>

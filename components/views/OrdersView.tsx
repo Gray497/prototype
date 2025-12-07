@@ -4,7 +4,6 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import {
   MoreHorizontal,
-  ShoppingBag,
   Phone,
   MapPin,
   Box,
@@ -52,13 +51,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ orders, onNavigate }) =>
           <h2 className="text-3xl font-bold tracking-tight">订单管理</h2>
           <p className="text-muted-foreground">查看和处理店铺订单。</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline">导出订单</Button>
-          <Button>
-            <ShoppingBag className="mr-2 h-4 w-4" />
-            新建订单
-          </Button>
-        </div>
+        <span className="text-sm text-muted-foreground">当前仅支持查看，暂不开放新建或导出</span>
       </div>
 
       <Card>
