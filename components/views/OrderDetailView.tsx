@@ -157,15 +157,16 @@ export const OrderDetailView: React.FC<OrderDetailViewProps> = ({ orderId, order
           <KeyValue label="订单状态" value={order.shippingStatus} />
           {editingOrder ? (
             <>
-              <Editable label="产品名称" value={form?.product || ''} onChange={(v) => setForm((p) => (p ? { ...p, product: v } : p))} />
-              <Editable label="品牌" value={form?.brand || ''} onChange={(v) => setForm((p) => (p ? { ...p, brand: v } : p))} />
-              <Editable label="分类" value={form?.category || ''} onChange={(v) => setForm((p) => (p ? { ...p, category: v } : p))} />
               <Editable label="数量" value={String(form?.quantity ?? '')} onChange={(v) => setForm((p) => (p ? { ...p, quantity: Number(v) || 0 } : p))} />
               <Editable label="金额" value={form?.amount || ''} onChange={(v) => setForm((p) => (p ? { ...p, amount: v } : p))} />
               <Editable label="货币" value={form?.currency || ''} onChange={(v) => setForm((p) => (p ? { ...p, currency: v } : p))} />
-              <Editable label="支付方式" value={form?.paymentMethod || ''} onChange={(v) => setForm((p) => (p ? { ...p, paymentMethod: v } : p))} />
-              <Editable label="支付流水号" value={form?.transactionId || ''} onChange={(v) => setForm((p) => (p ? { ...p, transactionId: v } : p))} />
-              <Editable label="支付时间" value={form?.payTime || ''} onChange={(v) => setForm((p) => (p ? { ...p, payTime: v } : p))} />
+              <KeyValue label="支付状态" value={order.status} />
+              <KeyValue label="支付方式" value={order.paymentMethod} />
+              <KeyValue label="产品名称" value={order.product} />
+              <KeyValue label="品牌/分类" value={`${order.brand} / ${order.category}`} />
+              <KeyValue label="支付流水号" value={order.transactionId || '—'} />
+              <KeyValue label="下单时间" value={order.orderTime} />
+              <KeyValue label="支付时间" value={order.payTime} />
             </>
           ) : (
             <>
