@@ -16,3 +16,6 @@ export * from './templates';
 // 导出订单数据
 export * from './orders';
 
+// 品牌方数据
+export * from './brands';
+

@@ -20,6 +20,7 @@ import { LeadsView } from './components/views/LeadsView';
 // 系统管理
 import { UsersView } from './components/views/UsersView';
 import { RolesView } from './components/views/RolesView';
+import { BrandOwnersView } from './components/views/BrandOwnersView';
 import { Order, initialOrders } from './data';
 
 // 路由类型定义
@@ -104,6 +105,7 @@ function App() {
             <OrderDetailView
               orderId={id}
               orders={orders}
+              onUpdateOrders={setOrders}
               onNavigate={navigate}
             />
           );
@@ -116,6 +118,7 @@ function App() {
             <OrderDetailView
               orderId={id}
               orders={orders}
+              onUpdateOrders={setOrders}
               onNavigate={navigate}
             />
           );
@@ -139,6 +142,8 @@ function App() {
       // 内容管理
       case 'tags':
         return <TagsView />;
+      case 'brands':
+        return <BrandOwnersView />;
       // 玄学模块
       case 'leads':
         return <LeadsView />;

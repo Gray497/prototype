@@ -11,7 +11,8 @@ import {
   Sparkles,
   UserCog,
   Shield,
-  Tag
+  Tag,
+  Building2
 } from 'lucide-react';
 import { NavItem } from '../types';
 
@@ -48,6 +49,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, currentView, 
   const systemNavItems: NavItem[] = [
     { title: '用户管理', href: 'users', icon: UserCog, variant: 'ghost' },
     { title: '角色管理', href: 'roles', icon: Shield, variant: 'ghost' },
+    { title: '品牌方管理', href: 'brands', icon: Building2, variant: 'ghost' },
   ];
 
   // 分组导航
