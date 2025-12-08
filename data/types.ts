@@ -70,6 +70,18 @@ export interface Product {
   sales: number;
   skus: SKU[];
   attributeDefinitions?: SPUAttributeDefinition[];
+  // 新增字段
+  originalPrice?: number; // 原价
+  currentPrice?: number; // 现价
+  soldBase?: number; // 已售数量基数（可配，仅展示）
+  minOrderQuantity?: number; // 最少订购数量
+  maxOrderQuantity?: number; // 最多订购数量
+  countdown?: {
+    enabled: boolean; // 是否启用倒计时
+    duration?: number; // 倒计时时长
+    unit?: "day" | "minute"; // 时长单位：天/分钟
+  }; // 倒计时（心理焦虑）
+  keywords?: string[]; // 关键词
 }
 
 // 简化版产品（用于列表展示）

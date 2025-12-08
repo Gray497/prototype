@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/Card';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import { 
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "../ui/Card";
+import { Button } from "../ui/Button";
+import { Input } from "../ui/Input";
+import {
   ArrowLeft,
   Save,
   Plus,
@@ -16,18 +22,18 @@ import {
   Settings,
   ShoppingCart,
   Palette,
-  ChevronRight
-} from 'lucide-react';
-import { 
-  Product, 
-  SKU, 
-  SKUAttribute, 
+  ChevronRight,
+} from "lucide-react";
+import {
+  Product,
+  SKU,
+  SKUAttribute,
   SPUAttributeDefinition,
-  mockProducts 
-} from '../../data';
+  mockProducts,
+} from "../../data";
 
 // --- Tab 组件 ---
-type TabValue = 'skus' | 'attributes' | 'settings';
+type TabValue = "skus" | "attributes" | "settings";
 
 interface TabsProps {
   value: TabValue;
@@ -58,15 +64,20 @@ interface TabsTriggerProps {
   children: React.ReactNode;
 }
 
-const TabsTrigger: React.FC<TabsTriggerProps> = ({ value, activeValue, onClick, children }) => {
+const TabsTrigger: React.FC<TabsTriggerProps> = ({
+  value,
+  activeValue,
+  onClick,
+  children,
+}) => {
   const isActive = value === activeValue;
   return (
     <button
       onClick={onClick}
       className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${
-        isActive 
-          ? 'bg-background text-foreground shadow-sm' 
-          : 'hover:bg-background/50 hover:text-foreground'
+        isActive
+          ? "bg-background text-foreground shadow-sm"
+          : "hover:bg-background/50 hover:text-foreground"
       }`}
     >
       {children}
@@ -81,24 +92,34 @@ interface SKUAttributeEditorProps {
   compact?: boolean;
 }
 
-const SKUAttributeEditor: React.FC<SKUAttributeEditorProps> = ({ attributes, onChange, compact = false }) => {
+const SKUAttributeEditor: React.FC<SKUAttributeEditorProps> = ({
+  attributes,
+  onChange,
+  compact = false,
+}) => {
   const addAttribute = () => {
     const newAttr: SKUAttribute = {
       id: `attr-${Date.now()}`,
-      name: '',
-      value: ''
+      name: "",
+      value: "",
     };
     onChange([...attributes, newAttr]);
   };
 
-  const updateAttribute = (id: string, field: 'name' | 'value', value: string) => {
-    onChange(attributes.map(attr => 
-      attr.id === id ? { ...attr, [field]: value } : attr
-    ));
+  const updateAttribute = (
+    id: string,
+    field: "name" | "value",
+    value: string
+  ) => {
+    onChange(
+      attributes.map((attr) =>
+        attr.id === id ? { ...attr, [field]: value } : attr
+      )
+    );
   };
 
   const removeAttribute = (id: string) => {
-    onChange(attributes.filter(attr => attr.id !== id));
+    onChange(attributes.filter((attr) => attr.id !== id));
   };
 
   return (
@@ -108,14 +129,14 @@ const SKUAttributeEditor: React.FC<SKUAttributeEditorProps> = ({ attributes, onC
           <Input
             placeholder="属性名"
             value={attr.name}
-            onChange={(e) => updateAttribute(attr.id, 'name', e.target.value)}
+            onChange={(e) => updateAttribute(attr.id, "name", e.target.value)}
             className={compact ? "h-7 w-20 text-xs" : "h-8 w-28 text-sm"}
           />
           <span className="text-muted-foreground">=</span>
           <Input
             placeholder="属性值"
             value={attr.value}
-            onChange={(e) => updateAttribute(attr.id, 'value', e.target.value)}
+            onChange={(e) => updateAttribute(attr.id, "value", e.target.value)}
             className={compact ? "h-7 flex-1 text-xs" : "h-8 flex-1 text-sm"}
           />
           <Button
@@ -148,31 +169,41 @@ interface SKUEditModalProps {
   onClose: () => void;
 }
 
-const SKUEditModal: React.FC<SKUEditModalProps> = ({ sku, onSave, onClose }) => {
-  const [editingSku, setEditingSku] = useState<SKU>({ ...sku, attributes: [...sku.attributes] });
+const SKUEditModal: React.FC<SKUEditModalProps> = ({
+  sku,
+  onSave,
+  onClose,
+}) => {
+  const [editingSku, setEditingSku] = useState<SKU>({
+    ...sku,
+    attributes: [...sku.attributes],
+  });
 
   const handleChange = (field: keyof SKU, value: string | number) => {
-    setEditingSku(prev => ({ ...prev, [field]: value }));
+    setEditingSku((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleAttributeChange = (attributes: SKUAttribute[]) => {
-    setEditingSku(prev => ({ ...prev, attributes }));
+    setEditingSku((prev) => ({ ...prev, attributes }));
   };
 
   const handleSave = () => {
     // 自动更新 specs 基于 attributes
     const specs = editingSku.attributes
-      .filter(a => a.name && a.value)
-      .map(a => a.value)
-      .join(' / ');
+      .filter((a) => a.name && a.value)
+      .map((a) => a.value)
+      .join(" / ");
     onSave({ ...editingSku, specs: specs || editingSku.specs });
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div 
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={onClose}
+    >
+      <div
         className="bg-background rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200"
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-background">
           <h3 className="text-lg font-semibold">编辑 SKU</h3>
@@ -180,7 +211,7 @@ const SKUEditModal: React.FC<SKUEditModalProps> = ({ sku, onSave, onClose }) => 
             <X className="h-4 w-4" />
           </Button>
         </div>
-        
+
         <div className="p-4 space-y-5">
           {/* 基本信息 */}
           <div className="space-y-4">
@@ -188,18 +219,18 @@ const SKUEditModal: React.FC<SKUEditModalProps> = ({ sku, onSave, onClose }) => 
               <label className="text-sm font-medium">SKU 编码</label>
               <Input
                 value={editingSku.code}
-                onChange={(e) => handleChange('code', e.target.value)}
+                onChange={(e) => handleChange("code", e.target.value)}
                 placeholder="SKU-CODE"
                 className="font-mono"
               />
             </div>
-            
+
             <div className="grid gap-2">
               <label className="text-sm font-medium">库存</label>
               <Input
                 type="number"
                 value={editingSku.stock}
-                onChange={(e) => handleChange('stock', Number(e.target.value))}
+                onChange={(e) => handleChange("stock", Number(e.target.value))}
               />
             </div>
           </div>
@@ -227,13 +258,18 @@ const SKUEditModal: React.FC<SKUEditModalProps> = ({ sku, onSave, onClose }) => 
           <div className="space-y-2">
             <label className="text-sm font-medium">规格预览</label>
             <div className="p-3 bg-muted rounded-lg text-sm font-medium">
-              {editingSku.attributes.filter(a => a.value).map(a => a.value).join(' / ') || '暂无规格'}
+              {editingSku.attributes
+                .filter((a) => a.value)
+                .map((a) => a.value)
+                .join(" / ") || "暂无规格"}
             </div>
           </div>
         </div>
 
         <div className="flex items-center justify-end gap-2 p-4 border-t sticky bottom-0 bg-background">
-          <Button variant="outline" onClick={onClose}>取消</Button>
+          <Button variant="outline" onClick={onClose}>
+            取消
+          </Button>
           <Button onClick={handleSave}>
             <Save className="h-4 w-4 mr-2" />
             保存 SKU
@@ -250,23 +286,26 @@ interface ProductDetailViewProps {
   onNavigate: (path: string) => void;
 }
 
-export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId, onNavigate }) => {
+export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
+  productId,
+  onNavigate,
+}) => {
   const [product, setProduct] = useState<Product | null>(null);
-  const [activeTab, setActiveTab] = useState<TabValue>('skus');
+  const [activeTab, setActiveTab] = useState<TabValue>("skus");
   const [editingSkuId, setEditingSkuId] = useState<string | null>(null);
   const [isEditingBasicInfo, setIsEditingBasicInfo] = useState(false);
   const [formData, setFormData] = useState<Product | null>(null);
 
   // 加载产品数据
   useEffect(() => {
-    const found = mockProducts.find(p => p.id === productId);
+    const found = mockProducts.find((p) => p.id === productId);
     if (found) {
       const productWithAttributes = {
         ...found,
-        skus: found.skus.map(sku => ({
+        skus: found.skus.map((sku) => ({
           ...sku,
-          attributes: sku.attributes || []
-        }))
+          attributes: sku.attributes || [],
+        })),
       };
       setProduct(productWithAttributes);
       setFormData(productWithAttributes);
@@ -274,13 +313,17 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
   }, [productId]);
 
   const handleBack = () => {
-    onNavigate('products');
+    onNavigate("products");
   };
 
   // 产品基本信息编辑
-  const handleBasicInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleBasicInfoChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => prev ? { ...prev, [name]: value } : null);
+    setFormData((prev) => (prev ? { ...prev, [name]: value } : null));
   };
 
   const saveBasicInfo = () => {
@@ -292,18 +335,18 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
 
   // SKU 操作
   const handleSkuSave = (updatedSku: SKU) => {
-    setProduct(prev => {
+    setProduct((prev) => {
       if (!prev) return null;
       return {
         ...prev,
-        skus: prev.skus.map(s => s.id === updatedSku.id ? updatedSku : s)
+        skus: prev.skus.map((s) => (s.id === updatedSku.id ? updatedSku : s)),
       };
     });
-    setFormData(prev => {
+    setFormData((prev) => {
       if (!prev) return null;
       return {
         ...prev,
-        skus: prev.skus.map(s => s.id === updatedSku.id ? updatedSku : s)
+        skus: prev.skus.map((s) => (s.id === updatedSku.id ? updatedSku : s)),
       };
     });
     setEditingSkuId(null);
@@ -312,28 +355,40 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
   const addNewSku = () => {
     const newSku: SKU = {
       id: `SKU-${Date.now()}`,
-      code: '',
-      specs: '',
+      code: "",
+      specs: "",
       price: 0,
       stock: 0,
       sales: 0,
-      attributes: []
+      attributes: [],
     };
-    setProduct(prev => prev ? { ...prev, skus: [...prev.skus, newSku] } : null);
-    setFormData(prev => prev ? { ...prev, skus: [...prev.skus, newSku] } : null);
+    setProduct((prev) =>
+      prev ? { ...prev, skus: [...prev.skus, newSku] } : null
+    );
+    setFormData((prev) =>
+      prev ? { ...prev, skus: [...prev.skus, newSku] } : null
+    );
     setEditingSkuId(newSku.id);
   };
 
   const removeSku = (skuId: string) => {
-    if (!confirm('确定删除该 SKU 吗？')) return;
-    setProduct(prev => prev ? { 
-      ...prev, 
-      skus: prev.skus.filter(s => s.id !== skuId) 
-    } : null);
-    setFormData(prev => prev ? { 
-      ...prev, 
-      skus: prev.skus.filter(s => s.id !== skuId) 
-    } : null);
+    if (!confirm("确定删除该 SKU 吗？")) return;
+    setProduct((prev) =>
+      prev
+        ? {
+            ...prev,
+            skus: prev.skus.filter((s) => s.id !== skuId),
+          }
+        : null
+    );
+    setFormData((prev) =>
+      prev
+        ? {
+            ...prev,
+            skus: prev.skus.filter((s) => s.id !== skuId),
+          }
+        : null
+    );
   };
 
   if (!product || !formData) {
@@ -349,7 +404,9 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
     );
   }
 
-  const editingSku = editingSkuId ? product.skus.find(s => s.id === editingSkuId) : null;
+  const editingSku = editingSkuId
+    ? product.skus.find((s) => s.id === editingSkuId)
+    : null;
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -360,12 +417,18 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
         </Button>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold tracking-tight">{product.name}</h2>
-            <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
-              product.status === '上架' ? 'border-transparent bg-emerald-500/10 text-emerald-500' : 
-              product.status === '缺货' ? 'border-transparent bg-destructive/10 text-destructive' :
-              'border-transparent bg-muted text-muted-foreground'
-            }`}>
+            <h2 className="text-2xl font-bold tracking-tight">
+              {product.name}
+            </h2>
+            <span
+              className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+                product.status === "上架"
+                  ? "border-transparent bg-emerald-500/10 text-emerald-500"
+                  : product.status === "缺货"
+                  ? "border-transparent bg-destructive/10 text-destructive"
+                  : "border-transparent bg-muted text-muted-foreground"
+              }`}
+            >
               {product.status}
             </span>
           </div>
@@ -386,20 +449,104 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
             />
             <div className="space-y-1">
               <CardTitle>{product.name}</CardTitle>
-              <CardDescription>{product.description || '暂无描述'}</CardDescription>
+              <CardDescription>
+                {product.description || "暂无描述"}
+              </CardDescription>
               <div className="flex items-center gap-4 text-sm pt-2">
                 <div className="flex items-center gap-1.5">
                   <Package className="h-4 w-4 text-muted-foreground" />
-                  <span>库存: <strong>{product.totalStock}</strong></span>
+                  <span>
+                    库存: <strong>{product.totalStock}</strong>
+                  </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                  <span>销量: <strong>{product.sales}</strong></span>
+                  <span>
+                    销量:{" "}
+                    <strong>
+                      {product.soldBase
+                        ? product.sales + product.soldBase
+                        : product.sales}
+                      {product.soldBase && (
+                        <span className="text-muted-foreground text-xs ml-1">
+                          (基数+{product.soldBase})
+                        </span>
+                      )}
+                    </strong>
+                  </span>
                 </div>
               </div>
+              {/* 价格信息 */}
+              {(product.originalPrice || product.currentPrice) && (
+                <div className="flex items-center gap-3 text-sm pt-1">
+                  {product.originalPrice && (
+                    <span className="text-muted-foreground line-through">
+                      原价: {product.originalPrice}
+                    </span>
+                  )}
+                  {product.currentPrice && (
+                    <span className="text-destructive font-semibold">
+                      现价: {product.currentPrice}
+                    </span>
+                  )}
+                </div>
+              )}
+              {/* 订购数量范围 */}
+              {(product.minOrderQuantity || product.maxOrderQuantity) && (
+                <div className="text-xs text-muted-foreground pt-1">
+                  订购数量: {product.minOrderQuantity || 1} -{" "}
+                  {product.maxOrderQuantity || "不限"}
+                </div>
+              )}
+              {/* 倒计时 */}
+              {product.countdown?.enabled &&
+                product.countdown?.duration &&
+                product.countdown?.unit && (
+                  <div className="text-xs text-destructive font-medium pt-1">
+                    倒计时:{" "}
+                    {(() => {
+                      const duration = product.countdown.duration;
+                      const unit = product.countdown.unit;
+                      if (unit === "day") {
+                        return `${duration}天`;
+                      } else {
+                        // 分钟转换为天、小时、分钟
+                        const totalMinutes = duration;
+                        const days = Math.floor(totalMinutes / (24 * 60));
+                        const hours = Math.floor(
+                          (totalMinutes % (24 * 60)) / 60
+                        );
+                        const minutes = totalMinutes % 60;
+                        const parts = [];
+                        if (days > 0) parts.push(`${days}天`);
+                        if (hours > 0) parts.push(`${hours}小时`);
+                        if (minutes > 0 || parts.length === 0)
+                          parts.push(`${minutes}分钟`);
+                        return parts.join(" ");
+                      }
+                    })()}
+                  </div>
+                )}
+              {/* 关键词 */}
+              {product.keywords && product.keywords.length > 0 && (
+                <div className="flex flex-wrap gap-1 pt-2">
+                  {product.keywords.map((keyword, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs"
+                    >
+                      {keyword}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={() => setIsEditingBasicInfo(true)}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsEditingBasicInfo(true)}
+          >
             <Edit className="h-3.5 w-3.5 mr-1.5" />
             编辑信息
           </Button>
@@ -410,21 +557,33 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
       <Tabs value={activeTab} onChange={setActiveTab}>
         <div className="flex items-center justify-between">
           <TabsList>
-            <TabsTrigger value="skus" activeValue={activeTab} onClick={() => setActiveTab('skus')}>
+            <TabsTrigger
+              value="skus"
+              activeValue={activeTab}
+              onClick={() => setActiveTab("skus")}
+            >
               <Layers className="h-4 w-4 mr-2" />
               SKU 列表 ({product.skus.length})
             </TabsTrigger>
-            <TabsTrigger value="attributes" activeValue={activeTab} onClick={() => setActiveTab('attributes')}>
+            <TabsTrigger
+              value="attributes"
+              activeValue={activeTab}
+              onClick={() => setActiveTab("attributes")}
+            >
               <Palette className="h-4 w-4 mr-2" />
               SKU 属性管理
             </TabsTrigger>
-            <TabsTrigger value="settings" activeValue={activeTab} onClick={() => setActiveTab('settings')}>
+            <TabsTrigger
+              value="settings"
+              activeValue={activeTab}
+              onClick={() => setActiveTab("settings")}
+            >
               <Settings className="h-4 w-4 mr-2" />
               设置
             </TabsTrigger>
           </TabsList>
-          
-          {activeTab === 'skus' && (
+
+          {activeTab === "skus" && (
             <Button onClick={addNewSku}>
               <Plus className="h-4 w-4 mr-2" />
               添加 SKU
@@ -433,7 +592,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
         </div>
 
         {/* SKU 列表 Tab */}
-        {activeTab === 'skus' && (
+        {activeTab === "skus" && (
           <Card>
             <CardHeader>
               <CardTitle>SKU 规格管理</CardTitle>
@@ -453,11 +612,21 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                   <table className="w-full text-sm">
                     <thead className="bg-muted/50">
                       <tr className="border-b">
-                        <th className="h-11 px-4 text-left font-medium text-muted-foreground">SKU 编码</th>
-                        <th className="h-11 px-4 text-left font-medium text-muted-foreground">规格</th>
-                        <th className="h-11 px-4 text-left font-medium text-muted-foreground min-w-[200px]">属性</th>
-                        <th className="h-11 px-4 text-left font-medium text-muted-foreground w-20">库存</th>
-                        <th className="h-11 px-4 text-center font-medium text-muted-foreground w-24">操作</th>
+                        <th className="h-11 px-4 text-left font-medium text-muted-foreground">
+                          SKU 编码
+                        </th>
+                        <th className="h-11 px-4 text-left font-medium text-muted-foreground">
+                          规格
+                        </th>
+                        <th className="h-11 px-4 text-left font-medium text-muted-foreground min-w-[200px]">
+                          属性
+                        </th>
+                        <th className="h-11 px-4 text-left font-medium text-muted-foreground w-20">
+                          库存
+                        </th>
+                        <th className="h-11 px-4 text-center font-medium text-muted-foreground w-24">
+                          操作
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -467,15 +636,17 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                           className="border-b last:border-0 hover:bg-muted/30 transition-colors"
                         >
                           <td className="p-4 font-mono text-xs text-muted-foreground">
-                            {sku.code || <span className="text-destructive">未设置</span>}
+                            {sku.code || (
+                              <span className="text-destructive">未设置</span>
+                            )}
                           </td>
                           <td className="p-4 font-medium">
-                            {sku.specs || '-'}
+                            {sku.specs || "-"}
                           </td>
                           <td className="p-4">
                             <div className="flex flex-wrap gap-1.5">
                               {sku.attributes?.length > 0 ? (
-                                sku.attributes.map(attr => (
+                                sku.attributes.map((attr) => (
                                   <span
                                     key={attr.id}
                                     className="inline-flex items-center rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary"
@@ -485,12 +656,20 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                                   </span>
                                 ))
                               ) : (
-                                <span className="text-muted-foreground text-xs italic">暂无属性</span>
+                                <span className="text-muted-foreground text-xs italic">
+                                  暂无属性
+                                </span>
                               )}
                             </div>
                           </td>
                           <td className="p-4">
-                            <span className={sku.stock < 10 ? 'text-destructive font-semibold' : ''}>
+                            <span
+                              className={
+                                sku.stock < 10
+                                  ? "text-destructive font-semibold"
+                                  : ""
+                              }
+                            >
                               {sku.stock}
                             </span>
                           </td>
@@ -527,7 +706,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
         )}
 
         {/* SKU 属性管理 Tab */}
-        {activeTab === 'attributes' && (
+        {activeTab === "attributes" && (
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -537,20 +716,28 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                     SKU 属性管理
                   </CardTitle>
                   <CardDescription>
-                    定义此产品的 SKU 属性类型及可选值，当前共 {product.skus.length} 个 SKU
+                    定义此产品的 SKU 属性类型及可选值，当前共{" "}
+                    {product.skus.length} 个 SKU
                   </CardDescription>
                 </div>
-                <Button 
+                <Button
                   onClick={() => {
                     const newDef: SPUAttributeDefinition = {
                       id: `def-${Date.now()}`,
-                      name: '',
-                      values: []
+                      name: "",
+                      values: [],
                     };
-                    setProduct(prev => prev ? {
-                      ...prev,
-                      attributeDefinitions: [...(prev.attributeDefinitions || []), newDef]
-                    } : null);
+                    setProduct((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            attributeDefinitions: [
+                              ...(prev.attributeDefinitions || []),
+                              newDef,
+                            ],
+                          }
+                        : null
+                    );
                   }}
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -559,7 +746,8 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
               </div>
             </CardHeader>
             <CardContent>
-              {(!product.attributeDefinitions || product.attributeDefinitions.length === 0) ? (
+              {!product.attributeDefinitions ||
+              product.attributeDefinitions.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
                   <Palette className="h-8 w-8 mx-auto mb-3 opacity-50" />
                   <p>暂无属性定义</p>
@@ -568,7 +756,10 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
               ) : (
                 <div className="space-y-4">
                   {product.attributeDefinitions.map((def, index) => (
-                    <Card key={def.id} className="border-l-4 border-l-primary/50">
+                    <Card
+                      key={def.id}
+                      className="border-l-4 border-l-primary/50"
+                    >
                       <CardContent className="p-4">
                         <div className="flex items-start gap-4">
                           {/* 属性名称 */}
@@ -579,11 +770,19 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                                 <Input
                                   value={def.name}
                                   onChange={(e) => {
-                                    setProduct(prev => {
+                                    setProduct((prev) => {
                                       if (!prev) return null;
-                                      const newDefs = [...(prev.attributeDefinitions || [])];
-                                      newDefs[index] = { ...def, name: e.target.value };
-                                      return { ...prev, attributeDefinitions: newDefs };
+                                      const newDefs = [
+                                        ...(prev.attributeDefinitions || []),
+                                      ];
+                                      newDefs[index] = {
+                                        ...def,
+                                        name: e.target.value,
+                                      };
+                                      return {
+                                        ...prev,
+                                        attributeDefinitions: newDefs,
+                                      };
                                     });
                                   }}
                                   placeholder="属性名称（如：颜色）"
@@ -595,28 +794,39 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                                 {def.values.length} 个可选值
                               </div>
                             </div>
-                            
+
                             {/* 属性值列表 */}
                             <div className="pl-6 space-y-2">
                               <div className="flex flex-wrap gap-2">
                                 {def.values.map((val, valIndex) => (
-                                  <div 
+                                  <div
                                     key={valIndex}
                                     className="inline-flex items-center gap-1 bg-primary/10 rounded-md pl-3 pr-1 py-1"
                                   >
-                                    <span className="text-sm font-medium text-primary">{val}</span>
+                                    <span className="text-sm font-medium text-primary">
+                                      {val}
+                                    </span>
                                     <Button
                                       variant="ghost"
                                       size="icon"
                                       className="h-5 w-5 text-primary/50 hover:text-destructive hover:bg-transparent"
                                       onClick={() => {
-                                        setProduct(prev => {
+                                        setProduct((prev) => {
                                           if (!prev) return null;
-                                          const newDefs = [...(prev.attributeDefinitions || [])];
+                                          const newDefs = [
+                                            ...(prev.attributeDefinitions ||
+                                              []),
+                                          ];
                                           const newValues = [...def.values];
                                           newValues.splice(valIndex, 1);
-                                          newDefs[index] = { ...def, values: newValues };
-                                          return { ...prev, attributeDefinitions: newDefs };
+                                          newDefs[index] = {
+                                            ...def,
+                                            values: newValues,
+                                          };
+                                          return {
+                                            ...prev,
+                                            attributeDefinitions: newDefs,
+                                          };
                                         });
                                       }}
                                     >
@@ -624,46 +834,68 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                                     </Button>
                                   </div>
                                 ))}
-                                
+
                                 {/* 添加新值 */}
                                 <div className="inline-flex items-center">
                                   <Input
                                     placeholder="添加值..."
                                     className="h-7 w-24 text-xs"
                                     onKeyDown={(e) => {
-                                      if (e.key === 'Enter') {
-                                        const input = e.target as HTMLInputElement;
+                                      if (e.key === "Enter") {
+                                        const input =
+                                          e.target as HTMLInputElement;
                                         const newValue = input.value.trim();
-                                        if (newValue && !def.values.includes(newValue)) {
-                                          setProduct(prev => {
+                                        if (
+                                          newValue &&
+                                          !def.values.includes(newValue)
+                                        ) {
+                                          setProduct((prev) => {
                                             if (!prev) return null;
-                                            const newDefs = [...(prev.attributeDefinitions || [])];
-                                            newDefs[index] = { ...def, values: [...def.values, newValue] };
-                                            return { ...prev, attributeDefinitions: newDefs };
+                                            const newDefs = [
+                                              ...(prev.attributeDefinitions ||
+                                                []),
+                                            ];
+                                            newDefs[index] = {
+                                              ...def,
+                                              values: [...def.values, newValue],
+                                            };
+                                            return {
+                                              ...prev,
+                                              attributeDefinitions: newDefs,
+                                            };
                                           });
-                                          input.value = '';
+                                          input.value = "";
                                         }
                                       }
                                     }}
                                   />
-                                  <span className="text-xs text-muted-foreground ml-2">按 Enter 添加</span>
+                                  <span className="text-xs text-muted-foreground ml-2">
+                                    按 Enter 添加
+                                  </span>
                                 </div>
                               </div>
                             </div>
                           </div>
-                          
+
                           {/* 删除按钮 */}
                           <Button
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0"
                             onClick={() => {
-                              if (!confirm(`确定删除属性「${def.name || '未命名'}」吗？`)) return;
-                              setProduct(prev => {
+                              if (
+                                !confirm(
+                                  `确定删除属性「${def.name || "未命名"}」吗？`
+                                )
+                              )
+                                return;
+                              setProduct((prev) => {
                                 if (!prev) return null;
                                 return {
                                   ...prev,
-                                  attributeDefinitions: (prev.attributeDefinitions || []).filter(d => d.id !== def.id)
+                                  attributeDefinitions: (
+                                    prev.attributeDefinitions || []
+                                  ).filter((d) => d.id !== def.id),
                                 };
                               });
                             }}
@@ -674,7 +906,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                       </CardContent>
                     </Card>
                   ))}
-                  
+
                   {/* SKU 数量统计 */}
                   <Card className="bg-muted/30">
                     <CardContent className="p-4">
@@ -687,7 +919,10 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-primary">
-                            {product.attributeDefinitions.reduce((acc, def) => acc * (def.values.length || 1), 1)}
+                            {product.attributeDefinitions.reduce(
+                              (acc, def) => acc * (def.values.length || 1),
+                              1
+                            )}
                           </div>
                           <div className="text-xs text-muted-foreground">
                             理论 SKU 数 | 实际 {product.skus.length} 个
@@ -703,21 +938,24 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
         )}
 
         {/* 设置 Tab */}
-        {activeTab === 'settings' && (
+        {activeTab === "settings" && (
           <Card>
             <CardHeader>
               <CardTitle>产品设置</CardTitle>
               <CardDescription>配置产品的其他选项</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              {/* 发布状态 */}
               <div className="grid gap-2">
                 <label className="text-sm font-medium">发布状态</label>
                 <select
                   name="status"
                   value={product.status}
                   onChange={(e) => {
-                    const newStatus = e.target.value as Product['status'];
-                    setProduct(prev => prev ? { ...prev, status: newStatus } : null);
+                    const newStatus = e.target.value as Product["status"];
+                    setProduct((prev) =>
+                      prev ? { ...prev, status: newStatus } : null
+                    );
                   }}
                   className="h-10 w-full max-w-xs rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 >
@@ -726,17 +964,308 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
                   <option value="缺货">缺货</option>
                 </select>
               </div>
-              
-              <div className="grid gap-2">
+
+              {/* 价格设置 */}
+              <div className="space-y-4 border-t pt-4">
+                <h3 className="text-sm font-semibold">价格设置</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <label className="text-sm font-medium">原价</label>
+                    <Input
+                      type="number"
+                      value={product.originalPrice || ""}
+                      onChange={(e) =>
+                        setProduct((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                originalPrice: e.target.value
+                                  ? Number(e.target.value)
+                                  : undefined,
+                              }
+                            : null
+                        )
+                      }
+                      placeholder="输入原价"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <label className="text-sm font-medium">现价</label>
+                    <Input
+                      type="number"
+                      value={product.currentPrice || ""}
+                      onChange={(e) =>
+                        setProduct((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                currentPrice: e.target.value
+                                  ? Number(e.target.value)
+                                  : undefined,
+                              }
+                            : null
+                        )
+                      }
+                      placeholder="输入现价"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 订购数量设置 */}
+              <div className="space-y-4 border-t pt-4">
+                <h3 className="text-sm font-semibold">订购数量设置</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <label className="text-sm font-medium">最少订购数量</label>
+                    <Input
+                      type="number"
+                      value={product.minOrderQuantity || ""}
+                      onChange={(e) =>
+                        setProduct((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                minOrderQuantity: e.target.value
+                                  ? Number(e.target.value)
+                                  : undefined,
+                              }
+                            : null
+                        )
+                      }
+                      placeholder="输入最少订购数量"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <label className="text-sm font-medium">最多订购数量</label>
+                    <Input
+                      type="number"
+                      value={product.maxOrderQuantity || ""}
+                      onChange={(e) =>
+                        setProduct((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                maxOrderQuantity: e.target.value
+                                  ? Number(e.target.value)
+                                  : undefined,
+                              }
+                            : null
+                        )
+                      }
+                      placeholder="输入最多订购数量"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 已售数量基数 */}
+              <div className="space-y-4 border-t pt-4">
+                <h3 className="text-sm font-semibold">销量展示设置</h3>
+                <div className="grid gap-2">
+                  <label className="text-sm font-medium">已售数量基数</label>
+                  <Input
+                    type="number"
+                    value={product.soldBase || ""}
+                    onChange={(e) =>
+                      setProduct((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              soldBase: e.target.value
+                                ? Number(e.target.value)
+                                : undefined,
+                            }
+                          : null
+                      )
+                    }
+                    placeholder="输入已售数量基数"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    实际显示销量 = 真实销量 + 基数（仅用于展示，不影响真实数据）
+                  </p>
+                </div>
+              </div>
+
+              {/* 倒计时设置 */}
+              <div className="space-y-4 border-t pt-4">
+                <h3 className="text-sm font-semibold">
+                  倒计时设置（心理焦虑）
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="countdown-enabled"
+                      checked={product.countdown?.enabled || false}
+                      onChange={(e) =>
+                        setProduct((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                countdown: {
+                                  ...prev.countdown,
+                                  enabled: e.target.checked,
+                                  duration: e.target.checked
+                                    ? prev.countdown?.duration || 1
+                                    : undefined,
+                                  unit: e.target.checked
+                                    ? prev.countdown?.unit || "day"
+                                    : undefined,
+                                },
+                              }
+                            : null
+                        )
+                      }
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                    <label
+                      htmlFor="countdown-enabled"
+                      className="text-sm font-medium"
+                    >
+                      启用倒计时
+                    </label>
+                  </div>
+                  {product.countdown?.enabled && (
+                    <div className="grid grid-cols-2 gap-4 pl-6">
+                      <div className="grid gap-2">
+                        <label className="text-sm font-medium">
+                          倒计时时长
+                        </label>
+                        <Input
+                          type="number"
+                          min="1"
+                          value={product.countdown?.duration || ""}
+                          onChange={(e) =>
+                            setProduct((prev) =>
+                              prev
+                                ? {
+                                    ...prev,
+                                    countdown: {
+                                      ...prev.countdown,
+                                      duration: e.target.value
+                                        ? Number(e.target.value)
+                                        : undefined,
+                                    },
+                                  }
+                                : null
+                            )
+                          }
+                          placeholder="输入时长"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <label className="text-sm font-medium">单位</label>
+                        <select
+                          value={product.countdown?.unit || "day"}
+                          onChange={(e) =>
+                            setProduct((prev) =>
+                              prev
+                                ? {
+                                    ...prev,
+                                    countdown: {
+                                      ...prev.countdown,
+                                      unit: e.target.value as "day" | "minute",
+                                    },
+                                  }
+                                : null
+                            )
+                          }
+                          className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        >
+                          <option value="day">天</option>
+                          <option value="minute">分钟</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 关键词设置 */}
+              <div className="space-y-4 border-t pt-4">
+                <h3 className="text-sm font-semibold">关键词</h3>
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2">
+                    {(product.keywords || []).map((keyword, index) => (
+                      <div
+                        key={index}
+                        className="inline-flex items-center gap-1 bg-primary/10 rounded-md pl-3 pr-1 py-1"
+                      >
+                        <span className="text-sm font-medium text-primary">
+                          {keyword}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 text-primary/50 hover:text-destructive hover:bg-transparent"
+                          onClick={() => {
+                            const newKeywords = [...(product.keywords || [])];
+                            newKeywords.splice(index, 1);
+                            setProduct((prev) =>
+                              prev ? { ...prev, keywords: newKeywords } : null
+                            );
+                          }}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      placeholder="输入关键词后按 Enter 添加"
+                      className="h-8 text-sm"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          const input = e.target as HTMLInputElement;
+                          const newKeyword = input.value.trim();
+                          if (
+                            newKeyword &&
+                            !(product.keywords || []).includes(newKeyword)
+                          ) {
+                            setProduct((prev) =>
+                              prev
+                                ? {
+                                    ...prev,
+                                    keywords: [
+                                      ...(prev.keywords || []),
+                                      newKeyword,
+                                    ],
+                                  }
+                                : null
+                            );
+                            input.value = "";
+                          }
+                        }
+                      }}
+                    />
+                    <span className="text-xs text-muted-foreground">
+                      按 Enter 添加
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 商品图片 URL */}
+              <div className="grid gap-2 border-t pt-4">
                 <label className="text-sm font-medium">商品图片 URL</label>
                 <Input
                   value={product.image}
-                  onChange={(e) => setProduct(prev => prev ? { ...prev, image: e.target.value } : null)}
+                  onChange={(e) =>
+                    setProduct((prev) =>
+                      prev ? { ...prev, image: e.target.value } : null
+                    )
+                  }
                   placeholder="https://..."
                   className="max-w-md"
                 />
                 {product.image && (
-                  <img src={product.image} alt="预览" className="h-24 w-24 rounded-lg object-cover border mt-2" />
+                  <img
+                    src={product.image}
+                    alt="预览"
+                    className="h-24 w-24 rounded-lg object-cover border mt-2"
+                  />
                 )}
               </div>
             </CardContent>
@@ -755,38 +1284,57 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
 
       {/* 基本信息编辑弹窗 */}
       {isEditingBasicInfo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setIsEditingBasicInfo(false)}>
-          <div 
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={() => setIsEditingBasicInfo(false)}
+        >
+          <div
             className="bg-background rounded-lg shadow-xl w-full max-w-lg mx-4 animate-in fade-in zoom-in-95 duration-200"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between p-4 border-b">
               <h3 className="text-lg font-semibold">编辑产品信息</h3>
-              <Button variant="ghost" size="icon" onClick={() => setIsEditingBasicInfo(false)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsEditingBasicInfo(false)}
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            
+
             <div className="p-4 space-y-4">
               <div className="grid gap-2">
                 <label className="text-sm font-medium">商品名称</label>
-                <Input name="name" value={formData.name} onChange={handleBasicInfoChange} />
+                <Input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleBasicInfoChange}
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <label className="text-sm font-medium">品牌</label>
-                  <Input name="brand" value={formData.brand} onChange={handleBasicInfoChange} />
+                  <Input
+                    name="brand"
+                    value={formData.brand}
+                    onChange={handleBasicInfoChange}
+                  />
                 </div>
                 <div className="grid gap-2">
                   <label className="text-sm font-medium">分类</label>
-                  <Input name="category" value={formData.category} onChange={handleBasicInfoChange} />
+                  <Input
+                    name="category"
+                    value={formData.category}
+                    onChange={handleBasicInfoChange}
+                  />
                 </div>
               </div>
               <div className="grid gap-2">
                 <label className="text-sm font-medium">商品描述</label>
                 <textarea
                   name="description"
-                  value={formData.description || ''}
+                  value={formData.description || ""}
                   onChange={handleBasicInfoChange}
                   className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 />
@@ -794,10 +1342,15 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ productId,
             </div>
 
             <div className="flex items-center justify-end gap-2 p-4 border-t">
-              <Button variant="outline" onClick={() => {
-                setFormData(product);
-                setIsEditingBasicInfo(false);
-              }}>取消</Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setFormData(product);
+                  setIsEditingBasicInfo(false);
+                }}
+              >
+                取消
+              </Button>
               <Button onClick={saveBasicInfo}>
                 <Save className="h-4 w-4 mr-2" />
                 保存
