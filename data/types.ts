@@ -2,7 +2,7 @@
 // 通用类型定义
 // ============================================
 
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon } from "lucide-react";
 
 // --- 导航相关 ---
 export interface NavItem {
@@ -63,7 +63,7 @@ export interface Product {
   image: string;
   brand: string;
   category: string;
-  status: '上架' | '下架' | '缺货';
+  status: "上架" | "下架" | "缺货";
   description?: string;
   totalStock: number;
   priceRange: string;
@@ -79,7 +79,7 @@ export interface SimpleProduct {
   image: string;
   brand: string;
   category: string;
-  status: '上架' | '下架' | '缺货';
+  status: "上架" | "下架" | "缺货";
   description?: string;
   totalStock: number;
   priceRange: string;
@@ -90,20 +90,20 @@ export interface SimpleProduct {
 // --- 站点相关 ---
 
 // 地区
-export type Region = 'US' | 'EU' | 'TW' | 'CN' | 'JP';
+export type Region = "US" | "EU" | "TW" | "CN" | "JP";
 
 // 语言
-export type Language = 'en' | 'zh-TW' | 'zh-CN' | 'ja' | 'de' | 'fr';
+export type Language = "en" | "zh-TW" | "zh-CN" | "ja" | "de" | "fr";
 
 // 货币
 export interface Currency {
-  code: string;      // USD, EUR, TWD, CNY, JPY
-  symbol: string;    // $, €, NT$, ¥
-  name: string;      // 美元, 欧元, 新台币
+  code: string; // USD, EUR, TWD, CNY, JPY
+  symbol: string; // $, €, NT$, ¥
+  name: string; // 美元, 欧元, 新台币
 }
 
 // 支付方式类型
-export type PaymentCategory = 'online' | 'cod';  // 线上支付 / 货到付款
+export type PaymentCategory = "online" | "cod"; // 线上支付 / 货到付款
 
 // 支付方式
 export interface PaymentMethod {
@@ -112,8 +112,8 @@ export interface PaymentMethod {
   category: PaymentCategory;
   icon?: string;
   enabled: boolean;
-  comingSoon?: boolean;  // 即将推出
-  stores?: string[];     // 货到付款适用的门店（711/全家等）
+  comingSoon?: boolean; // 即将推出
+  stores?: string[]; // 货到付款适用的门店（711/全家等）
   config?: Record<string, unknown>;
 }
 
@@ -130,7 +130,7 @@ export interface ShippingMethod {
   name: string;
   description?: string;
   baseCost: number;
-  estimatedDays: string;  // "3-5", "1-2"
+  estimatedDays: string; // "3-5", "1-2"
   enabled: boolean;
 }
 
@@ -138,9 +138,9 @@ export interface ShippingMethod {
 export interface TaxRule {
   id: string;
   name: string;
-  rate: number;       // 税率百分比，如 5 表示 5%
-  type: 'inclusive' | 'exclusive';  // 含税/不含税
-  applyTo: 'all' | 'physical' | 'digital';  // 适用商品类型
+  rate: number; // 税率百分比，如 5 表示 5%
+  type: "inclusive" | "exclusive"; // 含税/不含税
+  applyTo: "all" | "physical" | "digital"; // 适用商品类型
 }
 
 // 站点
@@ -153,10 +153,15 @@ export interface Site {
   paymentMethods: PaymentMethod[];
   shippingMethods: ShippingMethod[];
   taxRules: TaxRule[];
-  availableSkuIds: string[];  // 可售 SKU ID 列表
-  status: 'active' | 'inactive';
+  availableSkuIds: string[]; // 可售 SKU ID 列表
+  status: "active" | "inactive";
   createdAt: string;
   updatedAt: string;
+  // 运费配置
+  shippingConfig?: {
+    freeShippingThreshold?: number; // 满多少免运费（订单金额）
+    defaultShippingFee?: number; // 默认运费金额
+  };
 }
 
 // --- 文章相关 ---
@@ -165,7 +170,7 @@ export interface Article {
   title: string;
   content: string;
   author: string;
-  status: '已发布' | '草稿' | '定时发布' | '已归档';
+  status: "已发布" | "草稿" | "定时发布" | "已归档";
   views: string;
   createdAt: string;
   lastViewedAt: string;
@@ -179,7 +184,7 @@ export interface Article {
 }
 
 // --- 站点模板相关 ---
-export type TemplateType = 'single' | 'multi';  // 单品/多品
+export type TemplateType = "single" | "multi"; // 单品/多品
 
 export interface SiteTemplate {
   id: string;
@@ -187,13 +192,13 @@ export interface SiteTemplate {
   type: TemplateType;
   description?: string;
   thumbnail?: string;
-  boundSiteIds: string[];  // 绑定的站点 ID 列表
+  boundSiteIds: string[]; // 绑定的站点 ID 列表
   config: {
     theme?: string;
     layout?: string;
     features?: string[];
   };
-  status: 'active' | 'draft';
+  status: "active" | "draft";
   createdAt: string;
   updatedAt: string;
 }
@@ -203,7 +208,7 @@ export interface Metric {
   title: string;
   value: string;
   change: string;
-  trend: 'up' | 'down' | 'neutral';
+  trend: "up" | "down" | "neutral";
   icon: LucideIcon;
 }
 
@@ -215,61 +220,60 @@ export interface RecentSale {
 }
 
 // --- 玄学模块-线索相关 ---
-export type LeadType = '手相' | '面相';
+export type LeadType = "手相" | "面相";
 
 export interface Lead {
   id: string;
-  sessionId: string;           // X-session-id
-  name: string;                // 姓名
-  phone: string;               // 手机号
-  siteId: string;              // 站点
-  siteName?: string;           // 站点名称（用于展示）
-  orderId?: string;            // 关联订单
-  productId?: string;          // 关联产品
-  skuId?: string;              // 关联 SKU
-  type: LeadType;              // 类型（手相、面相）
-  images: string[];            // 图片列表
-  createdAt: string;           // 创建时间
-  receptionist: string;        // 接待人
-  status?: '待处理' | '处理中' | '已完成';
-  remark?: string;             // 备注
+  sessionId: string; // X-session-id
+  name: string; // 姓名
+  phone: string; // 手机号
+  siteId: string; // 站点
+  siteName?: string; // 站点名称（用于展示）
+  orderId?: string; // 关联订单
+  productId?: string; // 关联产品
+  skuId?: string; // 关联 SKU
+  type: LeadType; // 类型（手相、面相）
+  images: string[]; // 图片列表
+  createdAt: string; // 创建时间
+  receptionist: string; // 接待人
+  status?: "待处理" | "处理中" | "已完成";
+  remark?: string; // 备注
 }
 
 // --- 系统管理-用户相关 ---
-export type SystemUserStatus = 'active' | 'inactive' | 'locked';
+export type SystemUserStatus = "active" | "inactive" | "locked";
 
 export interface SystemUser {
   id: string;
-  username: string;            // 用户名
-  name: string;                // 姓名
-  email: string;               // 邮箱
-  phone?: string;              // 手机号
-  avatar?: string;             // 头像
-  roleIds: string[];           // 关联角色ID列表
-  roleName?: string;           // 角色名称（用于展示）
-  status: SystemUserStatus;    // 状态
-  lastLoginAt?: string;        // 最后登录时间
-  createdAt: string;           // 创建时间
-  updatedAt: string;           // 更新时间
+  username: string; // 用户名
+  name: string; // 姓名
+  email: string; // 邮箱
+  phone?: string; // 手机号
+  avatar?: string; // 头像
+  roleIds: string[]; // 关联角色ID列表
+  roleName?: string; // 角色名称（用于展示）
+  status: SystemUserStatus; // 状态
+  lastLoginAt?: string; // 最后登录时间
+  createdAt: string; // 创建时间
+  updatedAt: string; // 更新时间
 }
 
 // --- 系统管理-角色相关 ---
 export interface Permission {
   id: string;
-  name: string;                // 权限名称
-  code: string;                // 权限编码
-  description?: string;        // 权限描述
+  name: string; // 权限名称
+  code: string; // 权限编码
+  description?: string; // 权限描述
 }
 
 export interface Role {
   id: string;
-  name: string;                // 角色名称
-  code: string;                // 角色编码
-  description?: string;        // 角色描述
-  permissions: string[];       // 权限ID列表
-  userCount?: number;          // 关联用户数
-  status: 'active' | 'inactive';
+  name: string; // 角色名称
+  code: string; // 角色编码
+  description?: string; // 角色描述
+  permissions: string[]; // 权限ID列表
+  userCount?: number; // 关联用户数
+  status: "active" | "inactive";
   createdAt: string;
   updatedAt: string;
 }
-
